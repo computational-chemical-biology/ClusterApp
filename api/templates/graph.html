@@ -1,0 +1,95 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script src="https://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.4/css/jquery.dataTables.min.css">
+
+    <h3>{{id}}</h3>
+    <div id="{{ids}}"></div>
+
+    <!-- D3.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+    <div class="container-fluid bg-1 text-center">
+    <h4>Clustering inputs:</h4>
+    <form method=post action="/graph">
+      <br>
+      <label for="taskid">GNPS task ID:</label><br>
+      <input type="text" id="taskid" name ="taskid" value=""><br>
+      <br>
+      <label for="metric">Dissimilarity measure:</label><br>
+      <select id="metric" name="metric" value="">
+      <option value="">-- Select a dissimilatiry--</option>
+      <option value="canberra">canberra</option>
+      <option value="braycurtis">braycurtis</option>
+      <option value="euclidean">euclidean</option>
+      <option value="seuclidean">seuclidean</option>
+      <option value="cityblock">cityblock</option>
+      <option value="chebyshev">chebyshev</option>
+      <option value="wminkowski">wminkowski</option>
+      <option value="correlation">correlation</option>
+      <option value="cosine">cosine</option>
+      <option value="dice">dice</option>
+      <option value="hamming">hamming</option>
+      <option value="jaccard">jaccard</option>
+      <option value="kulsinski">kulsinski</option>
+      <option value="mahalanobis">mahalanobis</option>
+      <option value="matching">matching</option>
+      <option value="rogerstanimoto">rogerstanimoto</option>
+      <option value="russellrao">russellrao</option>
+      <option value="sokalmichener">sokalmichener</option>
+      <option value="sokalsneath">sokalsneath</option>
+      <option value="yule">yule</option>                                                                       </select>
+      <br>
+      <br>
+      <input type="submit" value="Submit">
+     </form> 
+     </div>
+
+      <br>
+      <br>
+      {% if pcoa != None %}
+        <div class="container-fluid bg-1 text-center">
+            <h3>PCoA analysis</h3>
+            <object type="text/html" style="width:100%;height:500px;" data="{{url_for('static', filename=pcoa | safe) }}" >
+            </object>
+            <!--<div id="divId" style="display:none;"></div>
+            <div class="row text-center">
+                    <iframe src="{{pcoa | safe}}"></iframe>
+            </div>-->
+        </div>
+        <br>
+        <br>
+        <div class="form-group" style="text-align: center">
+          <a href="{{url_for('downloadplot')}}">
+          <button type="button" class="btn btn-dark">Download Emperor plot</button>
+          </a>
+        </div>
+      {% endif %}
+
+    <script> 
+        $(function(){
+          $("#divId").load("{{pcoa | safe}}"); 
+        });
+    </script> 
+<!--    <script type="text/javascript">
+
+        var graphs = {{graphJSON | safe}};
+        var ids = {{ids | safe}};
+
+        Plotly.plot(ids, // the ID of the div, created above
+                    graphs.data,
+                    graphs.layout || {});
+    </script> -->
+
+{% endblock %}
