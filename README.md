@@ -21,3 +21,18 @@ Launch
 make server
 ```
 
+### Use local install on jupyter
+
+Access the docker container
+
+```bash
+docker run -it -p 8888:8888 -v "$PWD":/ClusterApp clusterapp
+```
+
+Inside the container, run jupyter
+
+```bash
+jupyter notebook --ip 0.0.0.0 --port 8888 --no-browser --allow-root
+```
+
+

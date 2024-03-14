@@ -5,7 +5,7 @@ ENV INSTALL_PATH /ClusterApp
 RUN mkdir -p $INSTALL_PATH
 WORKDIR $INSTALL_PATH
 
-RUN pip install flask gunicorn pyteomics plotly
+RUN pip install flask gunicorn pyteomics plotly jupyter
 
 COPY . .
 #CMD gunicorn -b 0.0.0.0:8000 --access-logfile - "api.app:app"
