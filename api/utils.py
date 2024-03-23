@@ -44,43 +44,38 @@ def qiime2PCoA(sample_metadata, df, out_dir, norm=True,
         emperor_plot.visualization.export_data(out_dir)
     return emperor_plot
 
-def filterBlank(feat_table, prop_blank_feats=1.0, prop_samples=0.9):
-    """Filters out features that have intensity less than a desired
-       proportion of intensity in blank samples at a given
-       number of samples
-    Parameters
-    ----------
-    feat_table: pd.DataFrame
-        DataFrame containing columns with ATTRIBUTE_ suffix.
-        Blank samples should contain "B(b)lank" in the name
-    prop_blank_feats: float
-        Proportion of blank intensitie that a feature has to be greater to be keept.
-    prop_samples: float
-        Proportion of samples in which the feature has to be greated than blank average proportion.
-    Returns
-        Filtered pd.DataFrame.
-    -------
+def makePcoa(feat_table,taskId):
+    """
+    This Method Prepare The Meta And Feat Table To qiime2 and Return the pcoa object
+        
     """
     last_attr = feat_table.columns[feat_table.columns.str.contains('ATTRIBUTE')][-1]
     plast_attr = feat_table.columns.get_loc(last_attr)+1
-    mask = feat_table.filename.str.lower().str.contains('blank')
-    print('Found %s samples containing "blank" in the name.' % mask.sum())
-    print('Found %s features.' % (feat_table.shape[1]-plast_attr))
-    blank_mean = feat_table.loc[mask, feat_table.columns[plast_attr:]].mean()
-    feat_less_blank = (feat_table.loc[~mask, feat_table.columns[plast_attr:]]>(prop_blank_feats*blank_mean)).sum()
-    prop_feat_less_blank = feat_less_blank > prop_samples*(feat_table.shape[0]-mask.sum())
-    nprop = prop_feat_less_blank.sum()
-    print(f'''Found {nprop} features whose intensity was greater than {prop_blank_feats*100}% of the
-          average intensity of blank samples in {prop_samples*100}% samples at least.''')
-    return pd.concat([feat_table.loc[~mask, feat_table.columns[:plast_attr]],
-                      feat_table.loc[~mask, prop_feat_less_blank[prop_feat_less_blank].index]], axis=1)
+    meta = feat_table[feat_table.columns[:plast_attr]]
+    meta.filename+' Peak area'
+    feat = feat_table[feat_table.columns[plast_attr:]].T
+    feat.columns = meta.filename+' Peak area'
+    feat_tmp = pd.DataFrame(feat.index)
+    feat_tmp.reset_index(inplace=True)
+    feat_tmp = pd.DataFrame(feat_tmp[0].apply(lambda a: a.split("_")).tolist())
+    feat_tmp.reset_index(inplace=True)
+
+    feat_tmp.columns = ['row ID', 'row m/z', 'row retention time']
+    feat = pd.concat([feat_tmp, feat.reset_index(drop=True)], axis=1)
+    return createPcoa(meta=meta,feat=feat,metric='euclidean',taskId=taskId)
+    
+    
+    
 
 
-def createPcoa(meta,feat,metric):
-    taskid = uuid.uuid4()
-    if not os.path.exists(f'api/static/downloads/{taskid}'):
-            os.mkdir(f'api/static/downloads/{taskid}')
+def createPcoa(meta,feat,metric,taskId):
+    
+    directory_path = os.path.join(os.getcwd(), 'api/static/downloads', str(taskId))
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path, exist_ok=True) 
     return qiime2PCoA(meta, feat,
-                              out_dir=f'api/static/downloads/{taskid}',
+                              out_dir=directory_path,
                               metric=metric)
+    
+
      

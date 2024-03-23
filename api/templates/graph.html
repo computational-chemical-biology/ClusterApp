@@ -3,7 +3,6 @@
 {% block content %}
     {{ dropzone.load_css() }}
     {{ dropzone.style('border: 2px dashed #0087F7; margin: 5%; min-height: 100px;') }}
-    {{ dropzone.load_js() }}
 
     
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -53,7 +52,8 @@
       <option value="russellrao">russellrao</option>
       <option value="sokalmichener">sokalmichener</option>
       <option value="sokalsneath">sokalsneath</option>
-      <option value="yule">yule</option>                                                                       </select>
+      <option value="yule">yule</option>                                           
+      </select>
       <br>
       <br>
       <input type="submit" value="Submit">
@@ -65,6 +65,7 @@
       {% if pcoa != None %}
         <div class="container-fluid bg-1 text-center">
             <h3>PCoA analysis</h3>
+
             <object type="text/html" style="width:100%;height:500px;" data="{{url_for('static', filename=pcoa | safe) }}" >
             </object>
             <!--<div id="divId" style="display:none;"></div>
@@ -80,13 +81,20 @@
           </a>
         </div class="container-fluid">
       {% endif %}
-    
-      <div class="container-fluid bg-1 text-center ">
-        {{ dropzone.create(action='/upload') }}
-        {{ dropzone.config() }}
 
+      <div class="container-fluid bg-1 text-center">
+        <form  id="my-form"  action="{{ url_for('uploadForm') }}" enctype="multipart/form-data" method="post"  >
+            {{ dropzone.create() }}  
+            <input type="hidden" name="filename" value="{{ pcoa }}">
+            <input type="submit" id="submit" value="Submit and Upload">
+        </form>
       </div>
 
+      {{ dropzone.load_js() }}
+      {{ dropzone.config() }}
+
+
+    
     <script> 
         $(function(){
           $("#divId").load("{{pcoa | safe}}"); 
