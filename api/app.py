@@ -1,18 +1,11 @@
 from api.PcoaFactory import PcoaFactory
-from flask import Flask, render_template, request, session,send_file, redirect, url_for
-import traceback
-
+from flask import Flask, render_template, request, session,send_file
 import os
-import plotly
-import json
 import uuid
-import plotly.graph_objs as go
 from plotly.offline import plot
-import pandas as pd
-import numpy as np
 
-from api.gnps import Proteosafe
-from api.utils import makePcoa, qiime2PCoA
+
+
 from flask_dropzone import Dropzone
 
 app = Flask(__name__)
@@ -52,7 +45,9 @@ def uploadArchive():
     file = None
     for key, f in request.files.items():
         file = f
-
+    if file is None:
+        return '', 400
+    
     if not os.path.exists(app.config['UPLOADED_PATH']):
         os.makedirs(app.config['UPLOADED_PATH'], exist_ok=True)    
 
@@ -66,8 +61,11 @@ def uploadArchive():
 @app.route('/uploadForm', methods=['POST'])
 def uploadForm():
     fileName = session.get('fileId')
+    if fileName is None:
+        return "FileId not found in session", 400
+        
     file_path = os.path.join(app.config['UPLOADED_PATH'], fileName)
-     
+        
     if os.path.exists(file_path):
         pcoa = None
         with open(file_path, 'rb') as file:
@@ -75,7 +73,8 @@ def uploadForm():
             pcoa = factory.getPcoaFromFile(file)    
         return render_template('graph.html', pcoa=pcoa)
     else:
-        return "File not found", 404
+         return "File not found", 404
+    
     
 if __name__=='__main__':
     #app.run(debug=True)

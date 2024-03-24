@@ -1,10 +1,9 @@
+version: '3.8'
+
 services:
   web:
     build: .
     ports:
-      - "5004:5004"
-    develop:
-      watch:
-        - action: sync
-          path: .
-          target: /code
+      - 5004:5004
+    volumes:
+      - '.:/code'
