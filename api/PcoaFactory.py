@@ -10,7 +10,7 @@ class PcoaFactory:
         self.session = session
         pass
 
-    def getPcoaFromGnps(self,request):
+    def createPcoaFromGnps(self,request):
         taskid = uuid.uuid4()
         gnps_result = Proteosafe(request.form['taskid'], 'FBMN')
         gnps_result.get_gnps()
@@ -22,7 +22,7 @@ class PcoaFactory:
         return pcoa
     
 
-    def getPcoaFromFile(self,file):
+    def createPcoaFromFile(self,file):
         dataframe = pd.read_csv(file)
         taskid = uuid.uuid4()
         pcoaObject = self._reformatTable(dataframe,taskid)

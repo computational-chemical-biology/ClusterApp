@@ -27,7 +27,9 @@ dropzone = Dropzone(app)
 def graph():    
     if request.method == 'POST':
         factory = PcoaFactory(session=session)
-        pcoa = factory.getPcoaFromGnps(request=request)
+        factory.createPcoaFromGnps(request=request)
+        taskId = request.form['taskid']
+        pcoa = f'downloads/{taskId}/index.html'
     else:
         pcoa = None
     return render_template('graph.html', pcoa=pcoa)
@@ -70,7 +72,8 @@ def uploadForm():
         pcoa = None
         with open(file_path, 'rb') as file:
             factory = PcoaFactory(session=session)
-            pcoa = factory.getPcoaFromFile(file)    
+            factory.createPcoaFromFile(file)
+            pcoa = f'downloads/{fileName}/index.html'    
         return render_template('graph.html', pcoa=pcoa)
     else:
          return "File not found", 404
