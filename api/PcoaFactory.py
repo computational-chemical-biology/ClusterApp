@@ -18,15 +18,16 @@ class PcoaFactory:
         if not os.path.exists(directory_path):
             os.makedirs(directory_path, exist_ok=True)
         pcoa_obj = self._createPcoa(meta=gnps_result.meta, feat=gnps_result.feat,metric=request.form['metric'],taskId=taskid)     
-        pcoa = self._saveAndCreatePcoaDirs(pcoa_obj,taskid)
-        return pcoa
+        self._saveAndCreatePcoaDirs(pcoa_obj,taskid)
+        return taskid
     
 
-    def createPcoaFromFile(self,file):
+    def createPcoaFromFile(self,file,taskId):
         dataframe = pd.read_csv(file)
-        taskid = uuid.uuid4()
-        pcoaObject = self._reformatTable(dataframe,taskid)
-        pcoa = self._saveAndCreatePcoaDirs(pcoaObject,taskid)
+        pathToRemove = os.path.join(os.getcwd(), 'api/static/downloads', str(taskId))
+        os.remove(pathToRemove)
+        pcoaObject = self._reformatTable(dataframe,taskId)
+        pcoa = self._saveAndCreatePcoaDirs(pcoaObject,taskId)
         return pcoa
     
     

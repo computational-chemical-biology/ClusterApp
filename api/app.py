@@ -27,8 +27,7 @@ dropzone = Dropzone(app)
 def graph():    
     if request.method == 'POST':
         factory = PcoaFactory(session=session)
-        factory.createPcoaFromGnps(request=request)
-        taskId = request.form['taskid']
+        taskId =  factory.createPcoaFromGnps(request=request)
         pcoa = f'downloads/{taskId}/index.html'
     else:
         pcoa = None
@@ -44,6 +43,12 @@ def downloadplot():
 
 @app.route('/uploadArchive', methods=['GET', 'POST'])
 def uploadArchive():
+    """
+    upload an file to the server and save it in the UPLOADED_PATH and save the fileId in the session to be used later
+    Returns: 
+        204: if the file was uploaded successfully
+        400: if the file was not provided by the user 
+    """
     file = None
     for key, f in request.files.items():
         file = f
@@ -62,18 +67,24 @@ def uploadArchive():
 
 @app.route('/uploadForm', methods=['POST'])
 def uploadForm():
-    fileName = session.get('fileId')
-    if fileName is None:
+    """
+    get the file saved in the session and create a pcoa plot from it 
+    
+    Returns: the graph.html template with the pcoa plot if successful
+    400: if the file was not found in the session
+    """
+    fileId = session.get('fileId')
+    if fileId is None:
         return "FileId not found in session", 400
         
-    file_path = os.path.join(app.config['UPLOADED_PATH'], fileName)
+    file_path = os.path.join(app.config['UPLOADED_PATH'], fileId)
         
     if os.path.exists(file_path):
         pcoa = None
         with open(file_path, 'rb') as file:
             factory = PcoaFactory(session=session)
-            factory.createPcoaFromFile(file)
-            pcoa = f'downloads/{fileName}/index.html'    
+            factory.createPcoaFromFile(file,fileId)
+            pcoa = f'downloads/{fileId}/index.html'    
         return render_template('graph.html', pcoa=pcoa)
     else:
          return "File not found", 404
