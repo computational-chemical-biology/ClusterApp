@@ -1,6 +1,6 @@
 # ClusteApp
 <p align="center">
-  <img src="https://github.com/computational-chemical-biology/NAPviewer/blob/master/api/static/img/nap_logo.png?raw=true" alt="AP logo"/>
+  <img src="https://github.com/computational-chemical-biology/NAPviewer/blob/master/api/static/img/clusterapp-logo.png?raw=true" alt="AP logo"/>
 </p>
 
 ClusterApp: Just another clustering app. Cluster app is a popular dynamic clustering app, using QIIME2.
