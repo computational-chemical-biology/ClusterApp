@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # ClusteApp
 <p align="center">
   <img src="https://github.com/computational-chemical-biology/NAPviewer/blob/master/api/static/img/clusterapp-logo.png?raw=true" alt="AP logo"/>
