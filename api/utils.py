@@ -8,6 +8,7 @@ from qiime2.plugins import metadata, feature_table, diversity, emperor
 from q2_emperor import plot, procrustes_plot, biplot, generic_plot
 from scipy.spatial.distance import squareform, pdist
 import skbio
+import uuid
 
 
 def qiime2PCoA(sample_metadata, df, out_dir, norm=True,
@@ -42,3 +43,39 @@ def qiime2PCoA(sample_metadata, df, out_dir, norm=True,
     else:
         emperor_plot.visualization.export_data(out_dir)
     return emperor_plot
+
+def makePcoa(feat_table,taskId):
+    """
+    This Method Prepare The Meta And Feat Table To qiime2 and Return the pcoa object
+        
+    """
+    last_attr = feat_table.columns[feat_table.columns.str.contains('ATTRIBUTE')][-1]
+    plast_attr = feat_table.columns.get_loc(last_attr)+1
+    meta = feat_table[feat_table.columns[:plast_attr]]
+    meta.filename+' Peak area'
+    feat = feat_table[feat_table.columns[plast_attr:]].T
+    feat.columns = meta.filename+' Peak area'
+    feat_tmp = pd.DataFrame(feat.index)
+    feat_tmp.reset_index(inplace=True)
+    feat_tmp = pd.DataFrame(feat_tmp[0].apply(lambda a: a.split("_")).tolist())
+    feat_tmp.reset_index(inplace=True)
+
+    feat_tmp.columns = ['row ID', 'row m/z', 'row retention time']
+    feat = pd.concat([feat_tmp, feat.reset_index(drop=True)], axis=1)
+    return createPcoa(meta=meta,feat=feat,metric='euclidean',taskId=taskId)
+    
+    
+    
+
+
+def createPcoa(meta,feat,metric,taskId):
+    
+    directory_path = os.path.join(os.getcwd(), 'api/static/downloads', str(taskId))
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path, exist_ok=True) 
+    return qiime2PCoA(meta, feat,
+                              out_dir=directory_path,
+                              metric=metric)
+    
+
+     

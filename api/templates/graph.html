@@ -1,7 +1,10 @@
 {% extends "layout.html" %}
 
 {% block content %}
+    {{ dropzone.load_css() }}
+    {{ dropzone.style('border: 2px dashed #0087F7; margin: 5%; min-height: 100px;') }}
 
+    
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
@@ -49,7 +52,8 @@
       <option value="russellrao">russellrao</option>
       <option value="sokalmichener">sokalmichener</option>
       <option value="sokalsneath">sokalsneath</option>
-      <option value="yule">yule</option>                                                                       </select>
+      <option value="yule">yule</option>                                           
+      </select>
       <br>
       <br>
       <input type="submit" value="Submit">
@@ -58,6 +62,7 @@
 
       <br>
       <br>
+      
       {% if pcoa != None %}
         <div class="container-fluid bg-1 text-center">
             <h3>PCoA analysis</h3>
@@ -74,9 +79,22 @@
           <a href="{{url_for('downloadplot')}}">
           <button type="button" class="btn btn-dark">Download Emperor plot</button>
           </a>
-        </div>
+        </div class="container-fluid">
       {% endif %}
 
+     <div class="container-fluid bg-1 text-center">
+        <form  id="my-form"  action="{{ url_for('uploadForm') }}" enctype="multipart/form-data" method="post"  >
+            {{ dropzone.create() }}  
+            <input type="hidden" name="filename" value="{{ pcoa }}">
+            <input type="submit" id="submit" value="Submit and Upload">
+        </form>
+     </div> 
+
+      {{ dropzone.load_js() }}
+      {{ dropzone.config() }}
+
+
+    
     <script> 
         $(function(){
           $("#divId").load("{{pcoa | safe}}"); 
