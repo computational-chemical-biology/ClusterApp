@@ -24,7 +24,13 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 dropzone = Dropzone(app)
 
 @app.route('/graph', methods=['GET', 'POST'])
-def graph():    
+def graph():  
+    """
+    create a pcoa plot from data provided by the gnps with taskid of the user input
+    Returns:
+        the graph.html template with the pcoa plot if POST request
+        graph.html if GET request 
+    """  
     if request.method == 'POST':
         factory = PcoaFactory(session=session)
         taskId =  factory.createPcoaFromGnps(request=request)
@@ -37,6 +43,10 @@ def graph():
 
 @app.route('/downloadplot')
 def downloadplot():
+    """
+        download the pcoa plot file
+        Returns: the pcoa plot file 
+    """
     pcoa_file = session.get('pcoa_file')
     return send_file(pcoa_file, as_attachment=True)
 
@@ -51,9 +61,11 @@ def uploadArchive():
     """
     file = None
     for key, f in request.files.items():
+        print(key)
         file = f
     if file is None:
         return '', 400
+    
     
     if not os.path.exists(app.config['UPLOADED_PATH']):
         os.makedirs(app.config['UPLOADED_PATH'], exist_ok=True)    
@@ -88,7 +100,9 @@ def uploadForm():
         return render_template('graph.html', pcoa=pcoa)
     else:
          return "File not found", 404
-    
+@app.route('/usage',methods=['GET'])
+def usage():
+    return render_template('usage.html')    
     
 if __name__=='__main__':
     #app.run(debug=True)
