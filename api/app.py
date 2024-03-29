@@ -14,6 +14,8 @@ app.config.update(
     UPLOADED_PATH=os.path.join(os.getcwd(), 'api/static/downloads'),
     DROPZONE_DEFAULT_MESSAGE = 'Drop Down Your Archives Here',
     DROPZONE_MAX_FILES=1,
+    DROPZONE_ALLOWED_FILE_CUSTOM=True,
+    DROPZONE_ALLOWED_FILE_TYPE = '.csv',
     DROPZONE_UPLOAD_ACTION='uploadArchive', 
     DROPZONE_AUTO_PROCESS_QUEUE=False,
     DROPZONE_IN_FORM=True,
@@ -61,7 +63,6 @@ def uploadArchive():
     """
     file = None
     for key, f in request.files.items():
-        print(key)
         file = f
     if file is None:
         return '', 400
