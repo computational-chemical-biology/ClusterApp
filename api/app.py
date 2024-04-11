@@ -1,11 +1,13 @@
+import csv
 from api.PcoaFactory import PcoaFactory
-from flask import Flask, render_template, request, session,send_file
+from flask import Flask, redirect, render_template, request, session,send_file, url_for
 import os
 import uuid
 from plotly.offline import plot
 
 
 
+from api.utils import createFile, getFile
 from flask_dropzone import Dropzone
 
 app = Flask(__name__)
@@ -13,6 +15,7 @@ app = Flask(__name__)
 app.config.update(
     UPLOADED_PATH=os.path.join(os.getcwd(), 'api/static/downloads'),
     DROPZONE_DEFAULT_MESSAGE = 'Drop Down Your Archives Here',
+    DROPZONE_MAX_FILE_SIZE = 25,
     DROPZONE_MAX_FILES=1,
     DROPZONE_ALLOWED_FILE_CUSTOM=True,
     DROPZONE_ALLOWED_FILE_TYPE = '.csv',
@@ -101,10 +104,43 @@ def uploadForm():
         return render_template('graph.html', pcoa=pcoa)
     else:
          return "File not found", 404
+    
+
 @app.route('/usage',methods=['GET'])
 def usage():
+    """
+        Returns: the usage.html template
+    """
     return render_template('usage.html')    
+
+@app.route('/redirect', methods=['POST'])
+def redirectToDataTable():
+    """
+    create a file from the user input and redirect to the mountDataTable route
+    Returns: 
+        307: redirect to the mountDataTable route
+    """
+    createFile(request,session,app)
+    return redirect(url_for('mountDataTable'),code=307)
+
+@app.route('/download_csv', methods=['GET'])
+def download_csv():
+    """
+        used to send data to the dataTable.html template
+        Returns: the csv file
+    """
+    file = getFile(session,app)
+    if file is None:
+        return "File not found", 404
     
+    return send_file(file, as_attachment=True)
+
+@app.route('/mountDataTable', methods=['POST', 'GET'])
+def mountDataTable():
+    return render_template('dataTable.html')
+    
+    
+
 if __name__=='__main__':
     #app.run(debug=True)
     app.run()
