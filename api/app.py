@@ -137,6 +137,10 @@ def download_csv():
 
 @app.route('/mountDataTable', methods=['POST', 'GET'])
 def mountDataTable():
+    """
+        mount the dataTable.html template
+        Returns: the dataTable.html template
+    """
     return render_template('dataTable.html')
     
     
