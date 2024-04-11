@@ -14,23 +14,9 @@
     integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 
 
-<!-- <-- DataTables css -->
-<link href="https://cdn.datatables.net/v/bs/dt-2.0.3/datatables.min.css" rel="stylesheet">
-<link href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" rel="stylesheet">
-<link href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css" rel="stylesheet">
-<link href="https://cdn.datatables.net/buttons/1.7.0/css/buttons.dataTables.min.css" type="text/css" rel="stylesheet">
-<link href="https://cdn.datatables.net/select/2.0.0/css/select.dataTables.css" rel="stylesheet">
-
 <h3>{{id}}</h3>
 <div id="{{ids}}"></div>
 
-<!-- D3.js -->
-
-<!--     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script> -->
-
-
-<!-- Plotly.js -->
-<!-- <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> -->
 
 
 <div class="container-fluid bg-1 text-center">
@@ -100,6 +86,7 @@
         {{ dropzone.create() }}
         <input type="hidden" name="filename" value="{{ pcoa }}">
         <input class="btn btn-secondary" type="submit" id="submit" value="Submit and Upload">
+        <button id="editCsvButton" type="button" class="btn btn-secondary">Edit CSV</button>
     </form>
 </div>
 
@@ -107,113 +94,34 @@
 {{ dropzone.config() }}
 
 
-<!-- dataTable scripts-->
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
-
- 
-<script src="https://cdn.datatables.net/buttons/1.7.0/js/dataTables.buttons.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/select/2.0.0/js/dataTables.select.js"></script>
-<script src="https://cdn.datatables.net/select/2.0.0/js/select.dataTables.js"></script>
-
-<!-- DataTables Checkboxes -->
-<!-- <link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.12/css/dataTables.checkboxes.css" rel="stylesheet" />
-    <script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.12/js/dataTables.checkboxes.min.js"></script> -->
-
-<!-- PapaParse -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.0.0/papaparse.min.js"></script>
-
 <script>
 
-    function processCSV(file) {
-        Papa.parse(file, {
-            complete: (result) => {
-                if (result.data && result.data.length > 0) {
-                    htmlTableGenerator(result.data)
-                }
-            }
-        });
-    }
+function redirect(file) {
+        let formData = new FormData();
+        formData.append('file', file);
 
-    function htmlTableGenerator(content) {
-        let csv_preview = document.getElementById('csv-preview');
-
-        let html = '<table id="table" class="table table-condensed table-hover table-striped" style="width:100%">';
-
-        if (content.length == 0 || typeof (content[0]) === 'undefined') {
-            return null
-        } else {
-            const header = content[0];
-            const data = content.slice(1);
-
-            html += '<thead>';
-            html += '<tr>';
-            html += '<th></th>';
-            header.forEach((colData) => {
-                html += '<th>' + colData + '</th>';
-            });
-            html += '</tr>';
-            html += '</thead>';
-            html += '<tbody>';
-
-            data.forEach((row) => {
-                if (header.length === row.length) {
-                    html += '<tr>';
-                    html += '<td><input type="checkbox"></td>';
-                    row.forEach((colData) => {
-                        html += '<td>' + colData + '</td>';
-                    });
-                    html += '</tr>';
-                }
-            });
-
-            html += '</tbody>';
-            html += '</table>';
-
-            csv_preview.innerHTML = html;
-
-            initDataTable();
-        }
-    }
-
-
-    function initDataTable() {
-        $('#table').dataTable({
-            scrollX: true,
-             columnDefs: [
-                {
-                    orderable: false,
-                    render: DataTable.render.select(),
-                    targets: 0
-                }
-            ],
-            select: {
-                style: 'os',
-                selector: 'td:first-child',
-                headerCheckbox: false
-            },
-            dom: 'Bfrtip',
-            buttons: [
-                {
-                    text: 'Delete Selected',
-                    action: () => {
-                        var table = $('#table').DataTable();
-                        table.rows('.selected').remove().draw(false);
-                    }
-                },
-                'csv', 'excel', 'pdf'
-            ]
+        fetch('/redirect', {
+            method: 'POST',
+            body: formData
         })
-    }
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.url;
+        })
+        .then(redirectUrl => {
+            window.location.href = redirectUrl;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
 
 </script>
 
 
-{{ dropzone.config(custom_init='dz = this; dz.on("addedfile", file => { processCSV(file); }); ') }}
-
+{{ dropzone.config(custom_init='dz = this; dz.on("addedfile", function(file) {var button = document.getElementById("editCsvButton"); button.onclick = function() {redirect(file);};}); ') }}
 
 {% endblock %}
