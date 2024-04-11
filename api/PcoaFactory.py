@@ -1,7 +1,7 @@
 import os
 import uuid
 from api.gnps import Proteosafe
-from api.utils import makePcoa, qiime2PCoA
+from api.utils import  qiime2PCoA
 import pandas as pd
 
 
