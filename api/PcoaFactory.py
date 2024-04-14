@@ -24,7 +24,9 @@ class PcoaFactory:
 
     def createPcoaFromFile(self,file,taskId):
         dataframe = pd.read_csv(file)
+
         pathToRemove = os.path.join(os.getcwd(), 'api/static/downloads', str(taskId))
+
         os.remove(pathToRemove)
         pcoaObject = self._reformatTable(dataframe,taskId)
         pcoa = self._saveAndCreatePcoaDirs(pcoaObject,taskId)

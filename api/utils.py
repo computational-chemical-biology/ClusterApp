@@ -64,7 +64,7 @@ def createFile(request,session,app):
 def getFile(session,app):
     fileId = session.get('fileId')
     if fileId is None:
-        return "FileId not found in session", 400
+        return None
         
     return os.path.join(app.config['UPLOADED_PATH'], fileId)
 

@@ -1,11 +1,7 @@
-import csv
 from api.PcoaFactory import PcoaFactory
 from flask import Flask, redirect, render_template, request, session,send_file, url_for
 import os
 import uuid
-from plotly.offline import plot
-
-
 
 from api.utils import createFile, getFile
 from flask_dropzone import Dropzone
@@ -113,15 +109,15 @@ def usage():
     """
     return render_template('usage.html')    
 
-@app.route('/redirect', methods=['POST'])
-def redirectToDataTable():
+@app.route('/mountDataTable', methods=['POST','GET'])
+def mountDataTable():
     """
-    create a file from the user input and redirect to the mountDataTable route
-    Returns: 
-        307: redirect to the mountDataTable route
+    create a file from the user input and return dataTable.html template
+    Returns: the dataTable.html template
     """
     createFile(request,session,app)
-    return redirect(url_for('mountDataTable'),code=307)
+    return render_template('dataTable.html')
+
 
 @app.route('/download_csv', methods=['GET'])
 def download_csv():
@@ -134,16 +130,34 @@ def download_csv():
         return "File not found", 404
     
     return send_file(file, as_attachment=True)
+    
 
-@app.route('/mountDataTable', methods=['POST', 'GET'])
-def mountDataTable():
-    """
-        mount the dataTable.html template
-        Returns: the dataTable.html template
-    """
-    return render_template('dataTable.html')
+@app.route('/uploadEditedCsv', methods=['POST','GET'])
+def uploadEditedCsv():
+    createFile(request,session,app)
+    fullFilePath = getFile(session,app)
+    fileId = session.get('fileId')
+
+    if fullFilePath is None:
+        return "FileId not found in session", 400
+        
+    file_path = os.path.join(app.config['UPLOADED_PATH'], fullFilePath)
+
+    if not os.path.exists(file_path):
+         return "File not found", 404    
     
+    with open(file_path, 'rb') as file:
+        factory = PcoaFactory(session=session)
+        factory.createPcoaFromFile(file,fullFilePath)
+        pcoa = f'downloads/{fileId}/index.html'
+        
+    return redirect(url_for('render_graph', pcoa=pcoa))
     
+@app.route('/render_graph')
+def render_graph():
+    pcoa = request.args.get('pcoa')
+    return render_template('graph.html', pcoa=pcoa)
+
 
 if __name__=='__main__':
     #app.run(debug=True)

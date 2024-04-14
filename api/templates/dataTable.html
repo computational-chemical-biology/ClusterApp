@@ -154,20 +154,46 @@
     }
 
     function sendCsvToServer() {
-        let blob = preapareBlob();
-        
-        
+        const file = prepareBlob();
+        const url = "{{ url_for('uploadEditedCsv')}}"; 
+        const formData = new FormData();
+        formData.append('file', file);
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            return response.url; 
+        })
+        .then(templateUrl => {
+            window.location.href = templateUrl; 
+        });
+
     }
 
-    function preapareBlob(){
-        let table = $('#table').DataTable();
-        let data = []
-        table.columns().every(function (index) {
-            if (isColumnVisible(index)) {
+    function prepareBlob() {
+        const table = $('#table').DataTable();
+        const data = [];
+        const columnName = [];
+
+        table.columns().every(function(index) {
+            if (isColumnVisible(index) && index !== 0) {
+                columnName.push(table.column(index).header().textContent);
                 data.push(table.column(index).data().toArray());
             }
         });
-        return new Blob([Papa.unparse(data)], { type: 'text/csv' });
+
+        const transposedData = transposeArray(data);
+
+        transposedData.unshift(columnName);
+
+        const csvString = Papa.unparse(transposedData);
+
+        return new Blob([csvString], { type: 'text/csv' });
+    }
+
+    function transposeArray(array) {
+        return array[0].map((col, i) => array.map(row => row[i]));
     }
 
     function isColumnVisible(columnIndex) {

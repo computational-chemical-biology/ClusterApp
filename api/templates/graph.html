@@ -78,9 +78,6 @@
 
 {% endif %}
 
-<div id="csv-preview"></div>
-
-
 <div class="container-fluid bg-1 text-center">
     <form id="my-form" action="{{ url_for('uploadForm') }}" enctype="multipart/form-data" method="post">
         {{ dropzone.create() }}
@@ -99,22 +96,16 @@
 function redirect(file) {
         let formData = new FormData();
         formData.append('file', file);
-
-        fetch('/redirect', {
+        let url = "{{url_for('mountDataTable')}}";
+        fetch(url, {
             method: 'POST',
             body: formData
         })
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
             return response.url;
         })
         .then(redirectUrl => {
             window.location.href = redirectUrl;
-        })
-        .catch(error => {
-            console.error('Error:', error);
         });
 }
 
