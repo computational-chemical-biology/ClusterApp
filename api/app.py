@@ -40,8 +40,6 @@ def graph():
         pcoa = None
     return render_template('graph.html', pcoa=pcoa)
     
-     
-
 @app.route('/downloadplot')
 def downloadplot():
     """
@@ -60,20 +58,7 @@ def uploadArchive():
         204: if the file was uploaded successfully
         400: if the file was not provided by the user 
     """
-    file = None
-    for key, f in request.files.items():
-        file = f
-    if file is None:
-        return '', 400
-    
-    
-    if not os.path.exists(app.config['UPLOADED_PATH']):
-        os.makedirs(app.config['UPLOADED_PATH'], exist_ok=True)    
-
-    fileId = str(uuid.uuid4())
-    session['fileId'] = fileId
-    file.save(os.path.join(app.config['UPLOADED_PATH'], fileId))
-
+    createFile(request=request,session=session,app=app)
     return '',204
 
 

@@ -134,7 +134,12 @@
                         sendCsvToServer();
                     }
                 },
-                'csv'
+                {
+                    text: 'Download',
+                    action: () => {
+                        downloadCsv();
+                    }
+                }
             ],
             initComplete: function () {
                 this.api().columns().every(function (index) {
@@ -169,6 +174,18 @@
             window.location.href = templateUrl; 
         });
 
+    }
+
+
+    function downloadCsv() {
+        const file = prepareBlob();
+        const url = URL.createObjectURL(file);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'file.csv';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
     }
 
     function prepareBlob() {
