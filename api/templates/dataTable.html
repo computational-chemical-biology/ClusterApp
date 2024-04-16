@@ -20,7 +20,7 @@
     
     {% include 'navbar.html' %}
 
-
+    <div id="buttons-container"></div>
     <div id="csv-preview" style="  padding-top: 20px; background-color: #f0f0f0;">
       
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
@@ -62,31 +62,29 @@
             allowRemoveRow: true,            
         });
 
-        
-
         initButtons(hot);
     }
 
     function initButtons(hot) {
-        
+        const container = document.getElementById('buttons-container'); 
 
         const sendButton = document.createElement('button');
         sendButton.textContent = 'Send';
         sendButton.onclick = () => {
-            sendCsvToServer(hot.getData(),hot.getColHeader());
+            sendCsvToServer(hot.getData(), hot.getColHeader());
         };
 
         const downloadButton = document.createElement('button');
         downloadButton.textContent = 'Download';
         downloadButton.onclick = () => {
-            downloadCsv(hot.getData());
+            downloadCsv(hot.getData(),hot.getColHeader());
         };
 
         const buttonContainer = document.createElement('div');
         buttonContainer.appendChild(sendButton);
         buttonContainer.appendChild(downloadButton);
 
-        document.body.appendChild(buttonContainer);
+        container.appendChild(buttonContainer);
     }
 
 
@@ -109,8 +107,10 @@
     }
 
 
-    function downloadCsv(data) {
-        const csvString = Papa.unparse(data);
+    function downloadCsv(data,colData) {
+        
+        const csvData = [colData, ...data];
+        const csvString = Papa.unparse(csvData);
         const blob = new Blob([csvString], { type: 'text/csv' });
         const url = URL.createObjectURL(blob);
 
