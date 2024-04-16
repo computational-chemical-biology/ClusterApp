@@ -13,12 +13,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css"
         integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 
-    <!-- <-- DataTables css -->
-    <link href="https://cdn.datatables.net/v/bs/dt-2.0.3/datatables.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/buttons/1.7.0/css/buttons.dataTables.min.css" type="text/css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/select/2.0.0/css/select.dataTables.css" rel="stylesheet">
+    
     
 </head>
 <body onload="loadScreen()">
@@ -26,23 +21,12 @@
     {% include 'navbar.html' %}
 
 
-    <div id="csv-preview"></div>
-
-
-
-    <!-- dataTable scripts-->
-    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-    <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
-
-    
-    <script src="https://cdn.datatables.net/buttons/1.7.0/js/dataTables.buttons.min.js"></script>
+    <div id="csv-preview" style="  padding-top: 20px; background-color: #f0f0f0;">
+      
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/select/2.0.0/js/dataTables.select.js"></script>
-    <script src="https://cdn.datatables.net/select/2.0.0/js/select.dataTables.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css">
 
     <!-- PapaParse -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.0.0/papaparse.min.js"></script>
@@ -58,108 +42,56 @@
             download: true,
             complete: (result) => {
                 if (result.data && result.data.length > 0) {
-                    htmlTableGenerator(result.data)
+                    renderHandsontable(result.data);
                 }
             }
         });
     }
 
-    function htmlTableGenerator(content) {
-        let csv_preview = document.getElementById('csv-preview');
-        let html = '<table id="table" class="table table-condensed table-hover table-striped" style="width:100%">';
+    function renderHandsontable(content) {
+        const container = document.getElementById('csv-preview');
 
-        if (content.length == 0 || typeof (content[0]) === 'undefined') {
-            return null
-        } 
-        const header = content[0];
-        const data = content.slice(1);
-
-        html += '<thead>';
-        html += '<tr>';
-        html += '<th></th>';
-        header.forEach((colData) => {
-            html += '<th>' + colData + '</th>';
-        });
-        html += '</tr>';
-        html += '</thead>';
-        html += '<tbody>';
-
-        data.forEach((row) => {
-            if (header.length === row.length) {
-                html += '<tr>';
-                html += '<td><input type="checkbox"></td>';
-                row.forEach((colData) => {
-                    html += '<td>' + colData + '</td>';
-                });
-                 html += '</tr>';
-            }
+        const hot = new Handsontable(container, {
+            data: content.slice(1),
+            colHeaders: content[0],
+            rowHeaders: true,
+            licenseKey: 'non-commercial-and-evaluation',
+            stretchH: 'all',
+            contextMenu: true,
+            allowRemoveColumn: true,
+            allowRemoveRow: true,            
         });
 
-        html += '</tbody>';
-        html += '</table>';
+        
 
-        csv_preview.innerHTML = html;
-
-        initDataTable();
+        initButtons(hot);
     }
 
-    
+    function initButtons(hot) {
+        
 
-    function initDataTable() {
-        $('#table').dataTable({
-            scrollX: true,
-            columnDefs: [
-                {
-                    orderable: false,
-                    target: '_all'
-                }
-            ],
-            select: {
-                style: 'os',
-                selector: 'td:first-child  input[type="checkbox"]',
-                headerCheckbox: true
-            },
-            dom: 'Bfrtip',
-            buttons: [
-                {
-                    text: 'Delete Selected',
-                    action: () => {
-                        let table = $('#table').DataTable();
-                        table.rows($('table tr').has('input:checked')).remove().draw();
-                    }
-                },
-                {
-                    text: 'Send',
-                    action: () => {
-                        sendCsvToServer();
-                    }
-                },
-                {
-                    text: 'Download',
-                    action: () => {
-                        downloadCsv();
-                    }
-                }
-            ],
-            initComplete: function () {
-                this.api().columns().every(function (index) {
-                    let column = this;
-                    let columnIndex = column.index();
-                    if (columnIndex === 0) {
-                        return;
-                    }
-                    $('<div class="icon-container"><i class="fas fa-times"></i></div>')
-                        .appendTo($(column.header()))
-                        .on('click', function () {
-                            column.visible(false);
-                        });
-                });
-            }
-        });
+        const sendButton = document.createElement('button');
+        sendButton.textContent = 'Send';
+        sendButton.onclick = () => {
+            sendCsvToServer(hot.getData(),hot.getColHeader());
+        };
+
+        const downloadButton = document.createElement('button');
+        downloadButton.textContent = 'Download';
+        downloadButton.onclick = () => {
+            downloadCsv(hot.getData());
+        };
+
+        const buttonContainer = document.createElement('div');
+        buttonContainer.appendChild(sendButton);
+        buttonContainer.appendChild(downloadButton);
+
+        document.body.appendChild(buttonContainer);
     }
 
-    function sendCsvToServer() {
-        const file = prepareBlob();
+
+    function sendCsvToServer(data,colData) {
+        const file = prepareBlob(data,colData);
         const url = "{{ url_for('uploadEditedCsv')}}"; 
         const formData = new FormData();
         formData.append('file', file);
@@ -172,14 +104,16 @@
         })
         .then(templateUrl => {
             window.location.href = templateUrl; 
-        });
+        }); 
 
     }
 
 
-    function downloadCsv() {
-        const file = prepareBlob();
-        const url = URL.createObjectURL(file);
+    function downloadCsv(data) {
+        const csvString = Papa.unparse(data);
+        const blob = new Blob([csvString], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+
         const a = document.createElement('a');
         a.href = url;
         a.download = 'file.csv';
@@ -188,35 +122,15 @@
         window.URL.revokeObjectURL(url);
     }
 
-    function prepareBlob() {
-        const table = $('#table').DataTable();
-        const data = [];
-        const columnName = [];
-
-        table.columns().every(function(index) {
-            if (isColumnVisible(index) && index !== 0) {
-                columnName.push(table.column(index).header().textContent);
-                data.push(table.column(index).data().toArray());
-            }
-        });
-
-        const transposedData = transposeArray(data);
-
-        transposedData.unshift(columnName);
-
-        const csvString = Papa.unparse(transposedData);
-
+    function prepareBlob(data, colData) {
+        const csvData = [colData, ...data];
+        
+        const csvString = Papa.unparse(csvData);
+        
         return new Blob([csvString], { type: 'text/csv' });
     }
 
-    function transposeArray(array) {
-        return array[0].map((col, i) => array.map(row => row[i]));
-    }
-
-    function isColumnVisible(columnIndex) {
-        let table = $('#table').DataTable();
-        return table.column(columnIndex).visible();
-    }
+    
 
 </script>
 </body>
