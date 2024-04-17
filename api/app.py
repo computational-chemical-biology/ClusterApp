@@ -79,9 +79,12 @@ def uploadForm():
     if os.path.exists(file_path):
         pcoa = None
         with open(file_path, 'rb') as file:
-            factory = PcoaFactory(session=session)
-            factory.createPcoaFromFile(file,fileId)
-            pcoa = f'downloads/{fileId}/index.html'    
+            try:
+                factory = PcoaFactory(session=session)
+                factory.createPcoaFromFile(file,fileId)
+                pcoa = f'downloads/{fileId}/index.html'   
+            except Exception as e:
+                return render_template('error.html', error='an error occurred on analysis please contact the admin: '+str(e))
         return render_template('graph.html', pcoa=pcoa)
     else:
          return "File not found", 404
@@ -132,16 +135,23 @@ def uploadEditedCsv():
          return "File not found", 404    
     
     with open(file_path, 'rb') as file:
-        factory = PcoaFactory(session=session)
-        factory.createPcoaFromFile(file,fullFilePath)
-        pcoa = f'downloads/{fileId}/index.html'
-        
+        try:
+            factory = PcoaFactory(session=session)
+            factory.createPcoaFromFile(file,fullFilePath)
+            pcoa = f'downloads/{fileId}/index.html'
+        except Exception as e:
+            return redirect(url_for('error', error='an error occurred on analysis please contact the admin: '+str(e)))
     return redirect(url_for('render_graph', pcoa=pcoa))
     
 @app.route('/render_graph')
 def render_graph():
     pcoa = request.args.get('pcoa')
     return render_template('graph.html', pcoa=pcoa)
+
+@app.route('/error')
+def error():
+    error = request.args.get('error')
+    return render_template('error.html', error=error)
 
 
 if __name__=='__main__':
