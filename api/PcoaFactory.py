@@ -60,11 +60,13 @@ class PcoaFactory:
         plast_attr = feat_table.columns.get_loc(last_attr)+1
         meta = feat_table[feat_table.columns[:plast_attr]]
         meta.filename+' Peak area'
+        meta.fillna('empty', inplace=True)
+        meta = meta.astype(str)
         feat = feat_table[feat_table.columns[plast_attr:]].T
         feat.columns = meta.filename+' Peak area'
         feat_tmp = pd.DataFrame(feat.index)
         feat_tmp.reset_index(inplace=True)
-        feat_tmp = pd.DataFrame(feat_tmp[0].apply(lambda a: a.split("_")).tolist())
+        feat_tmp = pd.DataFrame(feat_tmp[0].apply(lambda a: a.split("_")[:2]).tolist())
         feat_tmp.reset_index(inplace=True)
 
         feat_tmp.columns = ['row ID', 'row m/z', 'row retention time']
