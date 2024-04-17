@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClusterApp - dataTable</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css"
+        integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+
+    
+    
+</head>
+<body onload="loadScreen()">
+    
+    {% include 'navbar.html' %}
+
+    <div id="buttons-container"></div>
+    <div id="csv-preview" style="  padding-top: 20px; background-color: #f0f0f0;">
+      
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css">
+
+    <!-- PapaParse -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.0.0/papaparse.min.js"></script>
+    <script>
+
+    function loadScreen() {
+        url = "{{ url_for('download_csv')}}";
+        processCSV(url);
+    }
+
+    function processCSV(file) {
+        Papa.parse(file, {
+            download: true,
+            complete: (result) => {
+                if (result.data && result.data.length > 0) {
+                    renderHandsontable(result.data);
+                }
+            }
+        });
+    }
+
+    function renderHandsontable(content) {
+        const container = document.getElementById('csv-preview');
+
+        const hot = new Handsontable(container, {
+            data: content.slice(1),
+            colHeaders: content[0],
+            rowHeaders: true,
+            licenseKey: 'non-commercial-and-evaluation',
+            stretchH: 'all',
+            contextMenu: true,
+            allowRemoveColumn: true,
+            allowRemoveRow: true,            
+        });
+
+        initButtons(hot);
+    }
+
+    function initButtons(hot) {
+        const container = document.getElementById('buttons-container'); 
+
+        const sendButton = document.createElement('button');
+        sendButton.textContent = 'Send';
+        sendButton.onclick = () => {
+            sendCsvToServer(hot.getData(), hot.getColHeader());
+        };
+
+        const downloadButton = document.createElement('button');
+        downloadButton.textContent = 'Download';
+        downloadButton.onclick = () => {
+            downloadCsv(hot.getData(),hot.getColHeader());
+        };
+
+        const buttonContainer = document.createElement('div');
+        buttonContainer.appendChild(sendButton);
+        buttonContainer.appendChild(downloadButton);
+
+        container.appendChild(buttonContainer);
+    }
+
+
+    function sendCsvToServer(data,colData) {
+        const file = prepareBlob(data,colData);
+        const url = "{{ url_for('uploadEditedCsv')}}"; 
+        const formData = new FormData();
+        formData.append('file', file);
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            return response.url; 
+        })
+        .then(templateUrl => {
+            window.location.href = templateUrl; 
+        }); 
+
+    }
+
+
+    function downloadCsv(data,colData) {
+        
+        const csvData = [colData, ...data];
+        const csvString = Papa.unparse(csvData);
+        const blob = new Blob([csvString], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'file.csv';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+    }
+
+    function prepareBlob(data, colData) {
+        const csvData = [colData, ...data];
+        
+        const csvString = Papa.unparse(csvData);
+        
+        return new Blob([csvString], { type: 'text/csv' });
+    }
+
+    
+
+</script>
+</body>
+</html>
