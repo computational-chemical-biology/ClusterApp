@@ -20,7 +20,14 @@
     
     {% include 'navbar.html' %}
 
-    <div id="buttons-container"></div>
+    <div id="buttons-container" class="row  px-4 py-2">
+        <div class="col">
+            <button class="btn btn-primary" onclick="sendButtonAction()" >Send</button>
+            <button class="btn btn-secondary"  onclick="downloadCsvButtonAction()"  >Download</button>
+        </div>
+    </div>
+    
+
     <div id="csv-preview" style="  padding-top: 20px; background-color: #f0f0f0;">
       
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
@@ -31,6 +38,8 @@
     <!-- PapaParse -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.0.0/papaparse.min.js"></script>
     <script>
+    
+    let hotInstace = undefined
 
     function loadScreen() {
         url = "{{ url_for('download_csv')}}";
@@ -62,34 +71,17 @@
             allowRemoveRow: true,            
         });
 
-        initButtons(hot);
-    }
-
-    function initButtons(hot) {
-        const container = document.getElementById('buttons-container'); 
-
-        const sendButton = document.createElement('button');
-        sendButton.textContent = 'Send';
-        sendButton.onclick = () => {
-            sendCsvToServer(hot.getData(), hot.getColHeader());
-        };
-
-        const downloadButton = document.createElement('button');
-        downloadButton.textContent = 'Download';
-        downloadButton.onclick = () => {
-            downloadCsv(hot.getData(),hot.getColHeader());
-        };
-
-        const buttonContainer = document.createElement('div');
-        buttonContainer.appendChild(sendButton);
-        buttonContainer.appendChild(downloadButton);
-
-        container.appendChild(buttonContainer);
+        hotInstace = hot
     }
 
 
-    function sendCsvToServer(data,colData) {
-        const file = prepareBlob(data,colData);
+    function sendButtonAction(){
+        sendCsvToServer();
+    }
+
+
+    function sendCsvToServer() {
+        const file = prepareBlob();
         const url = "{{ url_for('uploadEditedCsv')}}"; 
         const formData = new FormData();
         formData.append('file', file);
@@ -103,13 +95,23 @@
         .then(templateUrl => {
             window.location.href = templateUrl; 
         }); 
-
     }
 
+    function prepareBlob(data, colData) {
+        const csvData = [hotInstace.getColHeader(), ...hotInstace.getData()];
 
-    function downloadCsv(data,colData) {
+        const csvString = Papa.unparse(csvData);
         
-        const csvData = [colData, ...data];
+        return new Blob([csvString], { type: 'text/csv' });
+    }
+
+    function downloadCsvButtonAction() {
+        downloadCsv();
+    }
+
+    function downloadCsv() {
+        
+        const csvData = [hotInstace.getColHeader(), ...hotInstace.getData()];
         const csvString = Papa.unparse(csvData);
         const blob = new Blob([csvString], { type: 'text/csv' });
         const url = URL.createObjectURL(blob);
@@ -122,14 +124,7 @@
         window.URL.revokeObjectURL(url);
     }
 
-    function prepareBlob(data, colData) {
-        const csvData = [colData, ...data];
-        
-        const csvString = Papa.unparse(csvData);
-        
-        return new Blob([csvString], { type: 'text/csv' });
-    }
-
+    
     
 
 </script>
