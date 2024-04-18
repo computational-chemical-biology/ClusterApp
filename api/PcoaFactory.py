@@ -22,15 +22,24 @@ class PcoaFactory:
         return taskid
     
 
-    def createPcoaFromFile(self,file,taskId):
+    def createPcoaFromFile(self, file, taskId):
         dataframe = pd.read_csv(file)
 
         pathToRemove = os.path.join(os.getcwd(), 'api/static/downloads', str(taskId))
-
         os.remove(pathToRemove)
-        pcoaObject = self._reformatTable(dataframe,taskId)
-        pcoa = self._saveAndCreatePcoaDirs(pcoaObject,taskId)
+
+        empty_rows = dataframe[dataframe.isnull().all(axis=1)].index
+        if not empty_rows.empty:
+            dataframe.drop(empty_rows, inplace=True)
+
+        empty_cols = dataframe.columns[dataframe.isnull().all()]
+        if not empty_cols.empty:
+            dataframe.drop(empty_cols, axis=1, inplace=True)
+
+        pcoaObject = self._reformatTable(dataframe, taskId)
+        pcoa = self._saveAndCreatePcoaDirs(pcoaObject, taskId)
         return pcoa
+
     
     
 
