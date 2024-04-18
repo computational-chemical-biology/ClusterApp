@@ -1,8 +1,9 @@
-from api.PcoaFactory import PcoaFactory
 from flask import Flask, redirect, render_template, request, session,send_file, url_for
 import os
-import uuid
 
+from api.controller.graph_controller import GraphController
+from api.controller.upload_edited_csv_controller import UploadEditedCsvController
+from api.controller.upload_form_controller import UploadFormController
 from api.utils import createFile, getFile
 from flask_dropzone import Dropzone
 
@@ -26,19 +27,8 @@ dropzone = Dropzone(app)
 
 @app.route('/graph', methods=['GET', 'POST'])
 def graph():  
-    """
-    create a pcoa plot from data provided by the gnps with taskid of the user input
-    Returns:
-        the graph.html template with the pcoa plot if POST request
-        graph.html if GET request 
-    """  
-    if request.method == 'POST':
-        factory = PcoaFactory(session=session)
-        taskId =  factory.createPcoaFromGnps(request=request)
-        pcoa = f'downloads/{taskId}/index.html'
-    else:
-        pcoa = None
-    return render_template('graph.html', pcoa=pcoa)
+    controller = GraphController(request,session)
+    return controller.executeGraph()
     
 @app.route('/downloadplot')
 def downloadplot():
@@ -70,24 +60,11 @@ def uploadForm():
     Returns: the graph.html template with the pcoa plot if successful
     400: if the file was not found in the session
     """
-    fileId = session.get('fileId')
-    if fileId is None:
-        return "FileId not found in session", 400
-        
-    file_path = os.path.join(app.config['UPLOADED_PATH'], fileId)
-        
-    if os.path.exists(file_path):
-        pcoa = None
-        with open(file_path, 'rb') as file:
-            try:
-                factory = PcoaFactory(session=session)
-                factory.createPcoaFromFile(file,fileId)
-                pcoa = f'downloads/{fileId}/index.html'   
-            except Exception as e:
-                return render_template('error.html', error='an error occurred on analysis please contact the admin: '+str(e))
-        return render_template('graph.html', pcoa=pcoa)
-    else:
-         return "File not found", 404
+    try:
+        controller = UploadFormController(request,session,app)
+        return controller.executeUploadForm()
+    except Exception as e:
+        return redirect(url_for('error', error=e))
     
 
 @app.route('/usage',methods=['GET'])
@@ -122,37 +99,34 @@ def download_csv():
 
 @app.route('/uploadEditedCsv', methods=['POST','GET'])
 def uploadEditedCsv():
-    createFile(request,session,app)
-    fullFilePath = getFile(session,app)
-    fileId = session.get('fileId')
-
-    if fullFilePath is None:
-        return "FileId not found in session", 400
-        
-    file_path = os.path.join(app.config['UPLOADED_PATH'], fullFilePath)
-
-    if not os.path.exists(file_path):
-         return "File not found", 404    
-    
-    with open(file_path, 'rb') as file:
-        try:
-            factory = PcoaFactory(session=session)
-            factory.createPcoaFromFile(file,fullFilePath)
-            pcoa = f'downloads/{fileId}/index.html'
-        except Exception as e:
-            return redirect(url_for('error', error='an error occurred on analysis please contact the admin: '+str(e)))
-    return redirect(url_for('render_graph', pcoa=pcoa))
+    try:
+        controller = UploadEditedCsvController(request,session,app)
+        return controller.executeUploadEditedCsv()
+    except Exception as e:
+        return redirect(url_for('error', error=e))
     
 @app.route('/render_graph')
 def render_graph():
     pcoa = request.args.get('pcoa')
     return render_template('graph.html', pcoa=pcoa)
 
+
 @app.route('/error')
 def error():
     error = request.args.get('error')
     return render_template('error.html', error=error)
 
+@app.errorhandler(500)
+def error(error):
+    return render_template('error.html', error=error)
+
+@app.errorhandler(404)
+def notFound():
+    return render_template('error.html', error='Page not found')
+
+@app.errorhandler(400)
+def badRequest():
+    return render_template('error.html', error='Bad Request')
 
 if __name__=='__main__':
     #app.run(debug=True)
