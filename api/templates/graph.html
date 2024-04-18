@@ -82,7 +82,7 @@
     <form id="my-form" action="{{ url_for('uploadForm') }}" enctype="multipart/form-data" method="post">
         {{ dropzone.create() }}
         <input type="hidden" name="filename" value="{{ pcoa }}">
-        <input class="btn btn-secondary" type="submit" id="submit" value="Submit and Upload">
+        <button class="btn btn-secondary"  id="submit"  onclick="submitDropzone()">Submit and Upload</button>
         <button id="editCsvButton" type="button" class="btn btn-secondary">Edit CSV</button>
     </form>
 </div>
@@ -92,21 +92,42 @@
 
 
 <script>
+function submitDropzone() {
+    if(dz.getQueuedFiles().length === 0){
+        return;
+    }
+    document.getElementById("submit").hidden = true;
+    dz.processQueue();
+}
+
+dz.on("queuecomplete", function() {
+    fetch("{{ url_for('uploadForm') }}", {
+        method: 'POST',
+    })
+    .then(response => {
+    return response.url;
+    })
+    .then(redirectUrl => {
+        window.location.href = redirectUrl;
+    });
+});
 
 function redirect(file) {
-        let formData = new FormData();
-        formData.append('file', file);
-        let url = "{{url_for('mountDataTable')}}";
-        fetch(url, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            return response.url;
-        })
-        .then(redirectUrl => {
-            window.location.href = redirectUrl;
-        });
+    document.getElementById("submit").hidden = true;
+    document.getElementById("editCsvButton").hidden = true;
+    let formData = new FormData();
+    formData.append('file', file);
+    let url = "{{url_for('mountDataTable')}}";
+    fetch(url, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        return response.url;
+    })
+    .then(redirectUrl => {
+        window.location.href = redirectUrl;
+    });
 }
 
 
