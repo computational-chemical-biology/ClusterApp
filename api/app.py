@@ -1,9 +1,11 @@
 from flask import Flask, redirect, render_template, request, session,send_file, url_for
 import os
 
-from api.controller.graph_controller import GraphController
-from api.controller.upload_edited_csv_controller import UploadEditedCsvController
-from api.controller.upload_form_controller import UploadFormController
+
+from api.src.controller.graph_controller import GraphController
+from api.src.controller.upload_edited_csv_controller import UploadEditedCsvController
+from api.src.controller.upload_form_controller import UploadFormController
+from api.src.service.pcoa_from_file_service import PcoaFromFileService
 from api.utils import createFile, getFile
 from flask_dropzone import Dropzone
 
@@ -61,7 +63,7 @@ def uploadForm():
     400: if the file was not found in the session
     """
     try:
-        controller = UploadFormController(request,session,app)
+        controller = UploadFormController(request,session,app,PcoaFromFileService(session=session))
         return controller.executeUploadForm()
     except Exception as e:
         return redirect(url_for('error', error=e))
@@ -100,7 +102,7 @@ def download_csv():
 @app.route('/uploadEditedCsv', methods=['POST','GET'])
 def uploadEditedCsv():
     try:
-        controller = UploadEditedCsvController(request,session,app)
+        controller = UploadEditedCsvController(request,session,app,PcoaFromFileService(session=session))
         return controller.executeUploadEditedCsv()
     except Exception as e:
         return redirect(url_for('error', error=e))
