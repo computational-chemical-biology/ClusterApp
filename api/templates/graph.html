@@ -14,9 +14,9 @@
     integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 
 
+
 <h3>{{id}}</h3>
 <div id="{{ids}}"></div>
-
 
 
 <div class="container-fluid bg-1 text-center">
@@ -82,8 +82,8 @@
     <form id="my-form" action="{{ url_for('uploadForm') }}" enctype="multipart/form-data" method="post">
         {{ dropzone.create() }}
         <input type="hidden" name="filename" value="{{ pcoa }}">
-        <button class="btn btn-secondary"  id="submit"  onclick="submitDropzone()">Submit and Upload</button>
-        <button id="editCsvButton" type="button" class="btn btn-secondary">Edit CSV</button>
+        <button class="btn btn-secondary"  id="submit" hidden="true"  onclick="submitDropzone()">Submit and Upload</button>
+        <button id="editCsvButton" type="button" hidden="true" class="btn btn-secondary">Edit CSV</button>
     </form>
 </div>
 
@@ -93,9 +93,6 @@
 
 <script>
 function submitDropzone() {
-    if(dz.getQueuedFiles().length === 0){
-        return;
-    }
     document.getElementById("submit").hidden = true;
     dz.processQueue();
 }
@@ -134,6 +131,6 @@ function redirect(file) {
 </script>
 
 
-{{ dropzone.config(custom_init='dz = this; dz.on("addedfile", function(file) {var button = document.getElementById("editCsvButton"); button.onclick = function() {redirect(file);};}); ') }}
+{{ dropzone.config(custom_init='dz = this; dz.on("addedfile", function(file) {var button = document.getElementById("editCsvButton");  button.hidden = false;   document.getElementById("submit").hidden = false; button.onclick = function() {redirect(file);};}); ') }}
 
 {% endblock %}
