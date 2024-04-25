@@ -6,14 +6,14 @@ from api.src.controller.graph_controller import GraphController
 from api.src.controller.upload_edited_csv_controller import UploadEditedCsvController
 from api.src.controller.upload_form_controller import UploadFormController
 from api.src.service.pcoa_from_file_service import PcoaFromFileService
-from api.utils import createFile, getFile
+from api.src.utils.utils import createFile, getFile
 from flask_dropzone import Dropzone
 
 app = Flask(__name__)
 
 app.config.update(
     UPLOADED_PATH=os.path.join(os.getcwd(), 'api/static/downloads'),
-    DROPZONE_DEFAULT_MESSAGE = 'Drop Down Your Archives Here',
+    DROPZONE_DEFAULT_MESSAGE = 'Drop Down Your Archives Here To Generate The PCoA Plot',
     DROPZONE_MAX_FILE_SIZE = 25,
     DROPZONE_MAX_FILES=1,
     DROPZONE_ALLOWED_FILE_CUSTOM=True,
@@ -112,6 +112,14 @@ def render_graph():
     pcoa = request.args.get('pcoa')
     return render_template('graph.html', pcoa=pcoa)
 
+@app.route('/csv_from_gnps', methods=['POST'])
+def csv_from_gnps():
+    """
+    create a csv file from the gnps user task
+    Returns: the csv file
+    """
+    
+    pass
 
 @app.route('/error')
 def error():

@@ -1,4 +1,4 @@
-from api.PcoaFactory import PcoaFactory
+from api.src.utils.PcoaFactory import PcoaFactory
 
 
 class PcoaFromFileService:

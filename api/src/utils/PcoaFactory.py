@@ -1,8 +1,10 @@
 import os
 import uuid
-from api.gnps import Proteosafe
-from api.utils import  qiime2PCoA
+from api.src.service.gnps import Proteosafe
+
 import pandas as pd
+
+from api.src.utils.utils import qiime2PCoA
 
 
 class PcoaFactory:

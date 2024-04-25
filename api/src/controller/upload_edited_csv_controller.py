@@ -1,7 +1,8 @@
 import os
 
 from flask import  redirect, url_for
-from api.utils import createFile, getFile
+
+from api.src.utils.utils import createFile, getFile
 
 
 class UploadEditedCsvController:
