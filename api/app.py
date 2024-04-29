@@ -1,7 +1,7 @@
 from flask import Flask, redirect, render_template, request, session,send_file, url_for
 import os
-
-
+import logging
+from api.src.controller.csv_from_gnps_controller import CsvFromGnpsController
 from api.src.controller.graph_controller import GraphController
 from api.src.controller.upload_edited_csv_controller import UploadEditedCsvController
 from api.src.controller.upload_form_controller import UploadFormController
@@ -26,6 +26,7 @@ app.config.update(
 )
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 dropzone = Dropzone(app)
+
 
 @app.route('/graph', methods=['GET', 'POST'])
 def graph():  
@@ -118,8 +119,15 @@ def csv_from_gnps():
     create a csv file from the gnps user task
     Returns: the csv file
     """
-    
-    pass
+    controller = CsvFromGnpsController(request=request,session=session,app=app)
+    csv_path = controller.get_csv_from_gnps()
+    return send_file(
+        csv_path,
+        mimetype='text/csv',
+        as_attachment=True, 
+        download_name='output.csv'
+    )
+     
 
 @app.route('/error')
 def error():
