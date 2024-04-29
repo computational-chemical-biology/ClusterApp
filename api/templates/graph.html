@@ -54,7 +54,7 @@
         <br>
         <div style="display: inline-flex; gap: 10px;">
             <input class="btn btn-secondary" type="submit" value="Submit">
-            <button class="btn btn-secondary" onclick="">CSV From GNPS</button>
+            <button class="btn btn-secondary" onclick="getCsvFromGnps(event)">CSV From GNPS</button>
         </div>
     </form>
 </div>
@@ -128,6 +128,35 @@ function redirect(file) {
     .then(redirectUrl => {
         window.location.href = redirectUrl;
     });
+}
+
+
+function getCsvFromGnps(event){
+    event.preventDefault();
+    taskId = document.getElementById('taskid').value,
+    metric = document.getElementById('metric').value
+    if(taskId == '' || metric == ''){
+        alert('Please fill in the task ID and select a dissimilarity measure');
+        return;
+    }
+    formData = new FormData();
+    formData.append('taskId', taskId);
+    formData.append('metric', metric);
+    let url = "{{url_for('csv_from_gnps')}}";
+    
+    fetch(url, {
+        method: 'POST',
+        body: formData,
+    }).then(response => {
+      response.blob().then(blob => {
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = 'data.csv';
+        a.click();
+      });
+    });
+
 }
 
 
