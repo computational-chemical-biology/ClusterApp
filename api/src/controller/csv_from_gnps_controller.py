@@ -13,11 +13,6 @@ class CsvFromGnpsController:
     
     def get_csv_from_gnps(self):
         taskId = self.request.form.get('taskId')
-        metric = self.request.form.get('metric')
-        self.app.logger.info(taskId)
-        self.app.logger.info(metric)
-
-
         gnps = Proteosafe(taskId, 'FBMN')
         gnps.get_gnps()
         meta = gnps.meta
@@ -25,14 +20,15 @@ class CsvFromGnpsController:
         return self._createCsv(feat,meta)
     
     def _createCsv(self,feat,meta):
-        df2 = self._mergeDf(feat,meta)
+        df = self._mergeDf(feat,meta)
         directoryPath = os.path.join(os.getcwd(), 'api/static/downloads')
         if not os.path.exists(directoryPath):
             os.makedirs(directoryPath, exist_ok=True)
         path = directoryPath+'/'+self.request.form.get('taskId')+ '.csv'
-        df2.to_csv(path)
+        df.to_csv(path)
         return path
         
     def _mergeDf(self,feat,meta):
-        df = pd.concat([feat, meta], axis=1, join="inner")
+        df = pd.concat([meta,feat], axis=1, join="inner")
+        df.fillna('empty', inplace=True)
         return df 

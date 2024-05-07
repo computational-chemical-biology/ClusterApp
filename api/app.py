@@ -1,6 +1,5 @@
 from flask import Flask, redirect, render_template, request, session,send_file, url_for
 import os
-import logging
 from api.src.controller.csv_from_gnps_controller import CsvFromGnpsController
 from api.src.controller.graph_controller import GraphController
 from api.src.controller.upload_edited_csv_controller import UploadEditedCsvController
@@ -137,10 +136,6 @@ def error():
 @app.errorhandler(500)
 def error(error):
     return render_template('error.html', error=error)
-
-@app.errorhandler(404)
-def notFound():
-    return render_template('error.html', error='Page not found')
 
 @app.errorhandler(400)
 def badRequest():
