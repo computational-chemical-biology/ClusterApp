@@ -133,13 +133,13 @@ function redirect(file) {
 
 function getCsvFromGnps(event){
     event.preventDefault();
-    taskId = document.getElementById('taskid').value,
-    metric = document.getElementById('metric').value
+    let taskId = document.getElementById('taskid').value;
+    let metric = document.getElementById('metric').value;
     if(taskId == '' || metric == ''){
         alert('Please fill in the task ID and select a dissimilarity measure');
         return;
     }
-    formData = new FormData();
+    const formData = new FormData();
     formData.append('taskId', taskId);
     formData.append('metric', metric);
     let url = "{{url_for('csv_from_gnps')}}";
