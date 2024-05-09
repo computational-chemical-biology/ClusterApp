@@ -14,9 +14,9 @@
     integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 
 
+
 <h3>{{id}}</h3>
 <div id="{{ids}}"></div>
-
 
 
 <div class="container-fluid bg-1 text-center">
@@ -52,7 +52,10 @@
         </select>
         <br>
         <br>
-        <input class="btn btn-secondary" type="submit" value="Submit">
+        <div style="display: inline-flex; gap: 10px;">
+            <input class="btn btn-secondary" type="submit" value="Submit">
+            <button class="btn btn-secondary" onclick="getCsvFromGnps(event)">CSV From GNPS</button>
+        </div>
     </form>
 </div>
 
@@ -82,8 +85,8 @@
     <form id="my-form" action="{{ url_for('uploadForm') }}" enctype="multipart/form-data" method="post">
         {{ dropzone.create() }}
         <input type="hidden" name="filename" value="{{ pcoa }}">
-        <input class="btn btn-secondary" type="submit" id="submit" value="Submit and Upload">
-        <button id="editCsvButton" type="button" class="btn btn-secondary">Edit CSV</button>
+        <button class="btn btn-secondary"  id="submit" hidden="true"  onclick="submitDropzone()">Submit and Upload</button>
+        <button id="editCsvButton" type="button" hidden="true" class="btn btn-secondary">Edit CSV</button>
     </form>
 </div>
 
@@ -92,27 +95,74 @@
 
 
 <script>
+function submitDropzone() {
+    document.getElementById("submit").hidden = true;
+    dz.processQueue();
+}
+
+dz.on("queuecomplete", function() {
+    fetch("{{ url_for('uploadForm') }}", {
+        method: 'POST',
+    })
+    .then(response => {
+    return response.url;
+    })
+    .then(redirectUrl => {
+        window.location.href = redirectUrl;
+    });
+});
 
 function redirect(file) {
-        let formData = new FormData();
-        formData.append('file', file);
-        let url = "{{url_for('mountDataTable')}}";
-        fetch(url, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            return response.url;
-        })
-        .then(redirectUrl => {
-            window.location.href = redirectUrl;
-        });
+    document.getElementById("submit").hidden = true;
+    document.getElementById("editCsvButton").hidden = true;
+    let formData = new FormData();
+    formData.append('file', file);
+    let url = "{{url_for('mountDataTable')}}";
+    fetch(url, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        return response.url;
+    })
+    .then(redirectUrl => {
+        window.location.href = redirectUrl;
+    });
+}
+
+
+function getCsvFromGnps(event){
+    event.preventDefault();
+    let taskId = document.getElementById('taskid').value;
+    let metric = document.getElementById('metric').value;
+    if(taskId == '' || metric == ''){
+        alert('Please fill in the task ID and select a dissimilarity measure');
+        return;
+    }
+    const formData = new FormData();
+    formData.append('taskId', taskId);
+    formData.append('metric', metric);
+    let url = "{{url_for('csv_from_gnps')}}";
+    
+    fetch(url, {
+        method: 'POST',
+        body: formData,
+    }).then(response => {
+      response.blob().then(blob => {
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = 'data.csv';
+        a.click();
+      });
+    });
+
 }
 
 
 </script>
 
 
-{{ dropzone.config(custom_init='dz = this; dz.on("addedfile", function(file) {var button = document.getElementById("editCsvButton"); button.onclick = function() {redirect(file);};}); ') }}
+{{ dropzone.config(custom_init='dz = this; dz.on("addedfile", function(file) {var button = document.getElementById("editCsvButton");  button.hidden = false;   document.getElementById("submit").hidden = false; button.onclick = function() {redirect(file);};}); ') }}
 
 {% endblock %}

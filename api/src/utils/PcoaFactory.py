@@ -1,8 +1,10 @@
 import os
 import uuid
-from api.gnps import Proteosafe
-from api.utils import  qiime2PCoA
+from api.src.service.gnps import Proteosafe
+
 import pandas as pd
+
+from api.src.utils.utils import qiime2PCoA
 
 
 class PcoaFactory:
@@ -28,6 +30,12 @@ class PcoaFactory:
         pathToRemove = os.path.join(os.getcwd(), 'api/static/downloads', str(taskId))
         os.remove(pathToRemove)
 
+        self._normalizeDataFrame(dataframe)
+        pcoaObject = self._reformatTable(dataframe, taskId)
+        pcoa = self._saveAndCreatePcoaDirs(pcoaObject, taskId)
+        return pcoa
+    
+    def _normalizeDataFrame(self,dataframe):
         empty_rows = dataframe[dataframe.isnull().all(axis=1)].index
         if not empty_rows.empty:
             dataframe.drop(empty_rows, inplace=True)
@@ -35,12 +43,6 @@ class PcoaFactory:
         empty_cols = dataframe.columns[dataframe.isnull().all()]
         if not empty_cols.empty:
             dataframe.drop(empty_cols, axis=1, inplace=True)
-
-        pcoaObject = self._reformatTable(dataframe, taskId)
-        pcoa = self._saveAndCreatePcoaDirs(pcoaObject, taskId)
-        return pcoa
-
-    
     
 
     def _saveAndCreatePcoaDirs(self,pcoa_obj,taskid):
@@ -68,6 +70,7 @@ class PcoaFactory:
         last_attr = feat_table.columns[feat_table.columns.str.contains('ATTRIBUTE')][-1]
         plast_attr = feat_table.columns.get_loc(last_attr)+1
         meta = feat_table[feat_table.columns[:plast_attr]]
+        meta.columns = meta.columns.str.replace('Filename', 'filename')
         meta.filename+' Peak area'
         meta.fillna('empty', inplace=True)
         meta = meta.astype(str)
