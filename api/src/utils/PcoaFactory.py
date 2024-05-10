@@ -1,5 +1,6 @@
 import os
 import uuid
+from api.src.model.DataProcessingConfig import DataProcessingConfig
 from api.src.service.gnps import Proteosafe
 
 import pandas as pd
@@ -12,26 +13,26 @@ class PcoaFactory:
         self.session = session
         pass
 
-    def createPcoaFromGnps(self,request):
+    def createPcoaFromGnps(self,dataProcessingConfig:DataProcessingConfig):
         taskid = uuid.uuid4()
-        gnps_result = Proteosafe(request.form['taskid'], 'FBMN')
+        gnps_result = Proteosafe(dataProcessingConfig.taskId, 'FBMN')
         gnps_result.get_gnps()
         directory_path = os.path.join(os.getcwd(), 'api/static/downloads', str(taskid))
         if not os.path.exists(directory_path):
             os.makedirs(directory_path, exist_ok=True)
-        pcoa_obj = self._createPcoa(meta=gnps_result.meta, feat=gnps_result.feat,metric=request.form['metric'],taskId=taskid)     
+        pcoa_obj = self._createPcoa(meta=gnps_result.meta, feat=gnps_result.feat,dataProcessingConfig=dataProcessingConfig,taskId=taskid)     
         self._saveAndCreatePcoaDirs(pcoa_obj,taskid)
         return taskid
     
 
-    def createPcoaFromFile(self, file, taskId):
+    def createPcoaFromFile(self, file, taskId, dataProcessingConfig:DataProcessingConfig):
         dataframe = pd.read_csv(file)
 
         pathToRemove = os.path.join(os.getcwd(), 'api/static/downloads', str(taskId))
         os.remove(pathToRemove)
 
         self._normalizeDataFrame(dataframe)
-        pcoaObject = self._reformatTable(dataframe, taskId)
+        pcoaObject = self._reformatTable(feat_table=dataframe, taskId=taskId,dataProcessingConfig=dataProcessingConfig)
         pcoa = self._saveAndCreatePcoaDirs(pcoaObject, taskId)
         return pcoa
     
@@ -53,19 +54,18 @@ class PcoaFactory:
         self.session['pcoa_file'] = pcoa_file
         return pcoa 
     
-    def _createPcoa(self,meta,feat,metric,taskId):
+    def _createPcoa(self,meta,feat,dataProcessingConfig:DataProcessingConfig,taskId):
         
         directory_path = os.path.join(os.getcwd(), 'api/static/downloads', str(taskId))
         if not os.path.exists(directory_path):
             os.makedirs(directory_path, exist_ok=True) 
         return qiime2PCoA(meta, feat,
                                 out_dir=directory_path,
-                                metric=metric)
+                                metric=dataProcessingConfig.metric)
     
-    def _reformatTable(self,feat_table,taskId):
+    def _reformatTable(self,feat_table,taskId,dataProcessingConfig:DataProcessingConfig):
         """
         This Method Prepare The Meta And Feat Table To qiime2 and Return the pcoa object
-            
         """
         last_attr = feat_table.columns[feat_table.columns.str.contains('ATTRIBUTE')][-1]
         plast_attr = feat_table.columns.get_loc(last_attr)+1
@@ -83,7 +83,7 @@ class PcoaFactory:
 
         feat_tmp.columns = ['row ID', 'row m/z', 'row retention time']
         feat = pd.concat([feat_tmp, feat.reset_index(drop=True)], axis=1)
-        return self._createPcoa(meta=meta,feat=feat,metric='euclidean',taskId=taskId)
+        return self._createPcoa(meta=meta,feat=feat,dataProcessingConfig=dataProcessingConfig,taskId=taskId)
     
     
     
