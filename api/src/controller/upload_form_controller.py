@@ -2,14 +2,13 @@ import os
 
 from flask import render_template
 
-from api.src.utils.PcoaFactory import PcoaFactory
-
-
+from api.src.model.DataProcessingConfig import DataProcessingConfig
+from api.src.service.pcoa_from_file_service import PcoaFromFileService
 
 
 class UploadFormController():
 
-    def __init__(self,request,session,app,pcoaFromFileService):
+    def __init__(self,request,session,app,pcoaFromFileService:PcoaFromFileService):
         self.request = request
         self.session = session
         self.app = app
@@ -24,6 +23,8 @@ class UploadFormController():
             400: if the file was not found in the session
         """
         fileId = self.session.get('fileId')
+        dataProcessingConfig = DataProcessingConfig(self.request.form['metric'], self.request.form['scaling'], self.request.form['normalization'], None)
+
         if fileId is None:
             return render_template('error.html', error='FileId not found in session')
             
@@ -34,15 +35,6 @@ class UploadFormController():
         
         pcoa = None
         with open(file_path, 'rb') as file:
-            pcoa = self.pcoaFromFileService._handleFile(file,fileId)
+            pcoa = self.pcoaFromFileService._handleFile(file,fileId,dataProcessingConfig)
 
         return render_template('graph.html', pcoa=pcoa)
-            
-
-    def _handleFile(self,file,fileId):
-        try:
-            factory = PcoaFactory(session=self.session)
-            factory.createPcoaFromFile(file,fileId)
-            return f'downloads/{fileId}/index.html'   
-        except Exception as e:
-            raise e
