@@ -24,10 +24,10 @@
     <form class="form-group" method=post action="/graph">
         <br>
         <label for="taskid">GNPS task ID:</label><br>
-        <input type="text" id="taskid" name="taskid" value=""><br>
+        <input type="text" id="taskid" name="taskid" value="" required><br>
         <br>
         <label for="metric">Dissimilarity measure:</label><br>
-        <select class="form-control-sm"  id="metric" name="metric" value="">
+        <select class="form-control-sm"  id="metric" name="metric" value="" required>
             <option value="">-- Select a dissimilatiry--</option>
             <option value="canberra">canberra</option>
             <option value="braycurtis">braycurtis</option>
@@ -58,7 +58,7 @@
         </select>
 
         <br>
-        <label for="scaling ">scaling :</label><br>
+        <label for="scaling">scaling :</label><br>
         <select class="form-control-sm" id="scaling" name="scaling" value="">
             <option value="">-- Select a scaling --</option>
             <option value="pareto">pareto</option>
