@@ -2,6 +2,9 @@ import os
 import re
 import pandas as pd
 import numpy as np
+from api.src.model.DataProcessingConfig import DataProcessingConfig
+from api.src.service.factorys.NormalizationFactory import NormalizationFactory
+from api.src.service.factorys.ScalingFactory import ScalingFactory
 import qiime2
 from qiime2 import Artifact
 from qiime2.plugins import metadata, feature_table, diversity, emperor
@@ -11,8 +14,8 @@ import skbio
 import uuid
 
 
-def qiime2PCoA(sample_metadata, df, out_dir, norm=True,
-                              scale=False, metric='canberra'):
+def qiime2PCoA(sample_metadata, df, out_dir,dataProcessingConfig:DataProcessingConfig, norm=True,
+                              scale=False):
     sample_metadata.rename(index=str, columns={"filename": "#SampleID"},
                            inplace=True)
     sample_metadata.columns = sample_metadata.columns.str.replace('\s', '_')
@@ -26,13 +29,21 @@ def qiime2PCoA(sample_metadata, df, out_dir, norm=True,
     df2.index = df['row ID'].astype(str)
     df2 = df2.T
 
-    if norm:
-        df2 = df2.apply(lambda a: a/sum(a), axis=1)
+    #if norm:
+    #    df2 = df2.apply(lambda a: a/sum(a), axis=1)
 
-    if scale:
-        df2 = (df2-df2.mean())/df2.std()
+    #if scale:
+    #    df2 = (df2-df2.mean())/df2.std()
 
-    dm1 = squareform(pdist(df2, metric=metric))
+    if dataProcessingConfig.normalization != None:
+        df2 = NormalizationFactory(dataProcessingConfig.normalization).normalize(df2)
+         
+    if dataProcessingConfig.scaling != None:
+        df2 = ScalingFactory(dataProcessingConfig.scaling).scale(df2)
+
+    df2.fillna(0, inplace=True)
+
+    dm1 = squareform(pdist(df2, metric=dataProcessingConfig.metric))
     dm1 = skbio.DistanceMatrix(dm1, ids=df2.index.tolist())
     dm1 = Artifact.import_data("DistanceMatrix", dm1)
     pcoa = diversity.methods.pcoa(dm1)

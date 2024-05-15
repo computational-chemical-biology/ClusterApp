@@ -61,7 +61,7 @@ class PcoaFactory:
             os.makedirs(directory_path, exist_ok=True) 
         return qiime2PCoA(meta, feat,
                                 out_dir=directory_path,
-                                metric=dataProcessingConfig.metric)
+                                dataProcessingConfig=dataProcessingConfig)
     
     def _reformatTable(self,feat_table,taskId,dataProcessingConfig:DataProcessingConfig):
         """
@@ -84,9 +84,3 @@ class PcoaFactory:
         feat_tmp.columns = ['row ID', 'row m/z', 'row retention time']
         feat = pd.concat([feat_tmp, feat.reset_index(drop=True)], axis=1)
         return self._createPcoa(meta=meta,feat=feat,dataProcessingConfig=dataProcessingConfig,taskId=taskId)
-    
-    
-    
-
-
-   
