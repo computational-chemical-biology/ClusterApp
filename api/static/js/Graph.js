@@ -11,10 +11,7 @@ function submitDropzone(event) {
 
 function populeInputs(){
     const metric = document.getElementById('metric');
-    const normalization = document.getElementById('normalization');
-    const scaling = document.getElementById('scaling');
-
-    return [metric, normalization, scaling];
+    return [metric];
 }
 
 function populeDragAndDropForm(){
@@ -32,10 +29,8 @@ function populeDragAndDropForm(){
 function verifyForm(event, inputs) {
 
     for (let input of inputs) {
-
         if (input.value === "") {
             invalidInput(event,input);
-
             return false;
         }
     }
