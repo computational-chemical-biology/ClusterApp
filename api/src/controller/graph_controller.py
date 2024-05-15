@@ -1,8 +1,4 @@
-from flask import render_template, request
-
-# Import Flask's logging module
-import logging
-
+from flask import render_template
 from api.src.model.DataProcessingConfig import DataProcessingConfig
 from api.src.utils.PcoaFactory import PcoaFactory
 
@@ -28,7 +24,9 @@ class GraphController:
     
 
     def executePost(self):
-        dataProcessingConfig = DataProcessingConfig(self.request.form['metric'], self.request.form['scaling'], self.request.form['normalization'], self.request.form['taskid'])
+        scalling = self.request.form['scaling']  if self.request.form['scaling'] != None else None
+        normalization = self.request.form['normalization'] if self.request.form['normalization'] != None else None
+        dataProcessingConfig = DataProcessingConfig(self.request.form['metric'], scalling, normalization, self.request.form['taskid'])
 
         factory = PcoaFactory(session=self.session)
         taskId =  factory.createPcoaFromGnps(dataProcessingConfig=dataProcessingConfig)

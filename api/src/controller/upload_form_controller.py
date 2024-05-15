@@ -23,7 +23,10 @@ class UploadFormController():
             400: if the file was not found in the session
         """
         fileId = self.session.get('fileId')
-        dataProcessingConfig = DataProcessingConfig(self.request.form['metric'], self.request.form['scaling'], self.request.form['normalization'], None)
+        scalling = self.request.form['scaling']  if self.request.form['scaling'] != None else None
+        normalization = self.request.form['normalization'] if self.request.form['normalization'] != None else None
+        
+        dataProcessingConfig = DataProcessingConfig(self.request.form['metric'], scalling, normalization, None)
 
         if fileId is None:
             return render_template('error.html', error='FileId not found in session')
