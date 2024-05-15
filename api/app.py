@@ -1,4 +1,5 @@
-from flask import Flask, redirect, render_template, request, session,send_file, url_for
+import logging
+from flask import Flask,  redirect, render_template, request, session,send_file, url_for
 import os
 from api.src.controller.csv_from_gnps_controller import CsvFromGnpsController
 from api.src.controller.graph_controller import GraphController
@@ -29,7 +30,7 @@ dropzone = Dropzone(app)
 
 @app.route('/graph', methods=['GET', 'POST'])
 def graph():  
-    controller = GraphController(request,session)
+    controller = GraphController(request,session,app)
     return controller.executeGraph()
     
 @app.route('/downloadplot')
