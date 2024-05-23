@@ -12,8 +12,13 @@ class NormalizationFactory:
             normalized_df *= medians.median()
             return normalized_df
         
-        df = df.apply(lambda a: a/sum(a), axis=1)
-        return df
+        elif self.normType == 'TIC':
+            normalized_df = df.apply(lambda a: a/sum(a), axis=1)
+            return normalized_df
+        
+        #in case of no normalization just return the original dataframe
+        else:
+            return df
 
 
     

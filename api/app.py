@@ -1,4 +1,3 @@
-import logging
 from flask import Flask,  redirect, render_template, request, session,send_file, url_for
 import os
 from api.src.controller.csv_from_gnps_controller import CsvFromGnpsController

@@ -14,8 +14,7 @@ import skbio
 import uuid
 
 
-def qiime2PCoA(sample_metadata, df, out_dir,dataProcessingConfig:DataProcessingConfig, norm=True,
-                              scale=False):
+def qiime2PCoA(sample_metadata, df, out_dir,dataProcessingConfig:DataProcessingConfig):
     sample_metadata.rename(index=str, columns={"filename": "#SampleID"},
                            inplace=True)
     sample_metadata.columns = sample_metadata.columns.str.replace('\s', '_')
@@ -29,11 +28,6 @@ def qiime2PCoA(sample_metadata, df, out_dir,dataProcessingConfig:DataProcessingC
     df2.index = df['row ID'].astype(str)
     df2 = df2.T
 
-    #if norm:
-    #    df2 = df2.apply(lambda a: a/sum(a), axis=1)
-
-    #if scale:
-    #    df2 = (df2-df2.mean())/df2.std()
 
     if dataProcessingConfig.normalization != None:
         df2 = NormalizationFactory(dataProcessingConfig.normalization).normalize(df2)
@@ -42,6 +36,10 @@ def qiime2PCoA(sample_metadata, df, out_dir,dataProcessingConfig:DataProcessingC
         df2 = ScalingFactory(dataProcessingConfig.scaling).scale(df2)
 
     df2.fillna(0, inplace=True)
+    zero_proportion = (df2 == 0).sum().sum() / df2.size
+
+    if zero_proportion == 1.0: 
+        raise ValueError(f"The DataFrame contains too many zero values ({zero_proportion:.2%}). Please check the input data table or try different scaling and normalization methods.")
 
     dm1 = squareform(pdist(df2, metric=dataProcessingConfig.metric))
     dm1 = skbio.DistanceMatrix(dm1, ids=df2.index.tolist())

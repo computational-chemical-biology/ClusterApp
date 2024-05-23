@@ -55,13 +55,17 @@
         <select class="form-control-sm" id="normalization" name="normalization" value="">
             <option value="">-- Select a normalization--</option>
             <option value="PQN">PQN</option>
+            <option value="TIC">TIC</option>
+
         </select>
 
         <br>
         <label for="scaling">scaling :</label><br>
         <select class="form-control-sm" id="scaling" name="scaling" value="">
             <option value="">-- Select a scaling --</option>
-            <option value="pareto">pareto</option>
+            <option value="pareto">Pareto</option>
+            <option value="autoscaling">Auto-Scaling</option>
+
         </select>
 
         <br>
@@ -69,7 +73,7 @@
 
         <div style="display: inline-flex; gap: 10px;">
             <input class="btn btn-secondary" type="submit" value="Submit">
-            <button class="btn btn-secondary" onclick="getCsvFromGnps(event)">CSV From GNPS</button>
+          <!--  <button class="btn btn-secondary" onclick="getCsvFromGnps(event)">CSV From GNPS</button> -->
         </div>
     </form>
 </div>
