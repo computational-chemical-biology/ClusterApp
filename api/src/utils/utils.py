@@ -3,7 +3,7 @@ import re
 import pandas as pd
 import numpy as np
 from api.src.model.DataProcessingConfig import DataProcessingConfig
-from api.src.service.factorys.NormalizationFactory import NormalizationFactory
+from api.src.service.factorys.normalization.NormalizationFactory import NormalizationFactory
 from api.src.service.factorys.ScalingFactory import ScalingFactory
 import qiime2
 from qiime2 import Artifact
