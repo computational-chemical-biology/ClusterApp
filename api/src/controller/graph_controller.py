@@ -1,14 +1,13 @@
 from flask import render_template
-
+from api.src.model.DataProcessingConfig import DataProcessingConfig
 from api.src.utils.PcoaFactory import PcoaFactory
-
-
 
 class GraphController:
 
-    def __init__(self,request,session):
+    def __init__(self,request,session,app):
         self.request = request
         self.session = session
+        self.app = app
 
     def executeGraph(self):
         """
@@ -25,6 +24,12 @@ class GraphController:
     
 
     def executePost(self):
+        scalling = self.request.form['scaling']  if self.request.form['scaling'] != None else None
+        normalization = self.request.form['normalization'] if self.request.form['normalization'] != None else None
+        dataProcessingConfig = DataProcessingConfig(self.request.form['metric'], scalling, normalization, self.request.form['taskid'])
+
         factory = PcoaFactory(session=self.session)
-        taskId =  factory.createPcoaFromGnps(request=self.request)
+        taskId =  factory.createPcoaFromGnps(dataProcessingConfig=dataProcessingConfig)
         return f'downloads/{taskId}/index.html'
+
+
