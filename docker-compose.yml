@@ -5,5 +5,6 @@ services:
     build: .
     ports:
       - 5004:5004
+      - 8888:8888
     volumes:
       - '.:/code'
