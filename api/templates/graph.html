@@ -5,11 +5,9 @@
 {{ dropzone.style('border: 2px dashed #0087F7; margin: 5%; min-height: 100px;') }}
 
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-    crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css"
     integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 
@@ -102,19 +100,37 @@
 
 <div class="container-fluid bg-1 text-center">
     <form id="my-form" action="{{ url_for('uploadForm') }}" enctype="multipart/form-data" method="post">
+        <button class="btn btn-secondary"  id="submit" hidden="true"  onclick="submitDropzone(event)">Submit and Upload</button>
+        <button id="editCsvButton" type="button" hidden="true" class="btn btn-secondary">Edit CSV</button>
         {{ dropzone.create() }}
         <input type="hidden" id="shared-metric" name="metric" value="">
         <input type="hidden" id="shared-normalization" name="normalization" value="">
         <input type="hidden" id="shared-scaling" name="scaling" value="">
-
-        <button class="btn btn-secondary"  id="submit" hidden="true"  onclick="submitDropzone(event)">Submit and Upload</button>
-        <button id="editCsvButton" type="button" hidden="true" class="btn btn-secondary">Edit CSV</button>
     </form>
 </div>
 
 {{ dropzone.load_js() }}
 {{ dropzone.config() }}
 
+
+<div class="modal" id="alert-modal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="alertModalLabel">Modal title</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Please ensure that Dissimilarity measure is filled and if you forget choose an normalization and scaling.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 <script src="../static/js/Graph.js"></script>
 <script>
 
