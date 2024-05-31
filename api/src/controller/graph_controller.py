@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import jsonify, render_template
 from api.src.model.DataProcessingConfig import DataProcessingConfig
 from api.src.utils.PcoaFactory import PcoaFactory
 
@@ -16,11 +16,10 @@ class GraphController:
             the graph.html template with the pcoa plot if POST request
             graph.html if GET request 
         """  
-        pcoa = None
         if self.request.method == 'POST':
-            pcoa = self.executePost()
+            return jsonify(self.executePost())
         
-        return render_template('graph.html', pcoa=pcoa)
+        return render_template('graph.html')
     
 
     def executePost(self):

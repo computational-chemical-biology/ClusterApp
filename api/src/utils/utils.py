@@ -62,12 +62,12 @@ def createFile(request,session,app):
         return '', 400
         
         
-    if not os.path.exists(app.config['UPLOADED_PATH']):
-        os.makedirs(app.config['UPLOADED_PATH'], exist_ok=True)    
+    if not os.path.exists('/ClusterApp/api/static/downloads'):
+        os.makedirs('/ClusterApp/api/static/downloads', exist_ok=True)    
 
     fileId = str(uuid.uuid4())
     session['fileId'] = fileId
-    file.save(os.path.join(app.config['UPLOADED_PATH'], fileId))
+    file.save(os.path.join('/ClusterApp/api/static/downloads', fileId))
 
 
 def getFile(session,app):
@@ -75,6 +75,6 @@ def getFile(session,app):
     if fileId is None:
         return None
         
-    return os.path.join(app.config['UPLOADED_PATH'], fileId)
+    return os.path.join('/ClusterApp/api/static/downloads', fileId)
 
      

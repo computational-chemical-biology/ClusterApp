@@ -7,7 +7,7 @@ class PcoaFromFileService:
     def __init__(self,session):
         self.session = session
 
-    def _handleFile(self,file,fileId,dataProcessingConfig:DataProcessingConfig):
+    def handleFile(self,file,fileId,dataProcessingConfig:DataProcessingConfig):
         try:
             factory = PcoaFactory(session=self.session)
             factory.createPcoaFromFile(file,fileId,dataProcessingConfig)

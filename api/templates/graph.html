@@ -16,7 +16,7 @@
 
 <div class="container-fluid bg-1 text-center">
     <h4>Clustering inputs:</h4>
-    <form class="form-group" method=post action="/graph">
+    <form id="clustering-form" class="form-group" method=post action="/graph">
         <br>
         <label for="taskid">GNPS task ID:</label><br>
         <input type="text" id="taskid" name="taskid" value="" required><br>
@@ -76,29 +76,28 @@
 <br>
 <br>
 
-{% if pcoa != None %}
-<div class="container-fluid bg-1 text-center">
+<div id="pcoa-div" hidden="true" class="container-fluid bg-1 text-center">
     <h3>PCoA analysis</h3>
-    <object type="text/html" style="width:100%;height:500px;" data="{{url_for('static', filename=pcoa | safe) }}">
-    </object>
+    <iframe id="pcoa-plot" type="text/html" style="width:100%;height:500px;">
+    </iframe>
 
 </div>
 
 <br>
 <br>
 
-<div class="form-group" style="text-align: center">
+<div id="downloadPlot" hidden="true" class="form-group" style="text-align: center">
     <a href="{{url_for('downloadplot')}}">
         <button type="button" class="btn btn-dark">Download Emperor plot</button>
     </a>
+    <br>
 </div class="container-fluid">
 
-{% endif %}
 
 <div class="container-fluid bg-1 text-center">
     <button class="btn btn-secondary"  id="submit" hidden="true" >Submit and Upload</button>
     <button id="editCsvButton" type="button" hidden="true" class="btn btn-secondary">Edit CSV</button>
-    <form  class="dropzone" id="dropzoneForm" action="{{ url_for('uploadFormV2') }}" enctype="multipart/form-data" method="post">
+    <form  class="dropzone" id="dropzoneForm" action="{{ url_for('dropzoneUploadHandler') }}" enctype="multipart/form-data" method="post">
         
         <input type="hidden" id="shared-metric" name="metric" value="">
         <input type="hidden" id="shared-normalization" name="normalization" value="">
@@ -132,6 +131,7 @@
 <script type="module">
 
 import { DropzoneListeners } from "../static/js/dropzone/DropzoneListeners.js";
+import { handlePcoaResponse } from "../static/js/Graph.js";
 
 Dropzone.options.dropzoneForm = {
     paramName: "file", 
@@ -148,23 +148,18 @@ Dropzone.options.dropzoneForm = {
 };
 
 
-function redirect(file) {
-    document.getElementById("submit").hidden = true;
-    document.getElementById("editCsvButton").hidden = true;
-    let formData = new FormData();
-    formData.append('file', file);
-    let url = "{{url_for('mountDataTable')}}";
-    fetch(url, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        return response.url;
-    })
-    .then(redirectUrl => {
-        window.location.href = redirectUrl;
-    });
-}
+document.getElementById('clustering-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        fetch('/graph', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            handlePcoaResponse(data);
+        })
+});
 
 
 function getCsvFromGnps(event){
@@ -194,7 +189,6 @@ function getCsvFromGnps(event){
     });
 
 }
-
 
 </script>
 

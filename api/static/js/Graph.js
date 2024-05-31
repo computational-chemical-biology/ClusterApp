@@ -18,3 +18,15 @@ export function showModal() {
     const modal = new bootstrap.Modal(modalElement);
     modal.show();
 }
+
+export function handlePcoaResponse(response){
+    document.getElementById("submit").hidden = false;
+    document.getElementById("editCsvButton").hidden = false;
+    document.getElementById("downloadPlot").hidden = false;
+    
+    const divPcoa = document.getElementById("pcoa-div");
+    const pcoaPlot = document.getElementById("pcoa-plot");
+    divPcoa.hidden = false;
+    pcoaPlot.hidden = false;
+    pcoaPlot.src = "static/"+response; 
+}

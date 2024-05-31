@@ -1,3 +1,4 @@
+import { handlePcoaResponse } from "../Graph.js";
 import { submitDropzone } from "./DropzoneValidator.js";
 export class DropzoneListeners {
 
@@ -12,15 +13,9 @@ export class DropzoneListeners {
         });
 
         this.dropzone.on("success", function(file, response) {
-            console.log("File uploaded successfully:", file.name);
-            console.log("Server response:", response);
-            
+            handlePcoaResponse(response);
           });
-        this.dropzone.on("error", function(file, errorMessage, xhr) {
-            console.error("Error uploading file:", file.name);
-            console.error("Error message:", errorMessage);
-            console.error("XHR object:", xhr);
-          });
+
     }
 
     _onAddedFile(file){
@@ -37,7 +32,6 @@ export class DropzoneListeners {
     }
 
     _redirect(file) {
-      console.log(file);
       document.getElementById("submit").hidden = true;
       document.getElementById("editCsvButton").hidden = true;
       let formData = new FormData();

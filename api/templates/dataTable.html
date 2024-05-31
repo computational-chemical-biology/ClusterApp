@@ -35,14 +35,14 @@
     <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css">
 
-    <!-- PapaParse -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.0.0/papaparse.min.js"></script>
     <script>
     
     let hotInstace = undefined
 
     function loadScreen() {
-        url = "{{ url_for('download_csv')}}";
+
+        let url = "{{ url_for('download_csv')}}";
         processCSV(url);
     }
 
