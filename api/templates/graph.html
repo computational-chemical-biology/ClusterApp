@@ -62,11 +62,16 @@
             <option value="autoscaling">Auto-Scaling</option>
 
         </select>
-
+        
+        
         <br>
+        <div id="loadin-spn" hidden="true" class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
         <br>
-
+        
         <div style="display: inline-flex; gap: 10px;">
+            
             <input class="btn btn-secondary" type="submit" value="Submit">
           <!--  <button class="btn btn-secondary" onclick="getCsvFromGnps(event)">CSV From GNPS</button> -->
         </div>
@@ -128,8 +133,8 @@
 <script type="module" src="../static/js/Graph.js"></script>
 <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
 <script type="module" src="../static/js/dropzone/DropzoneValidator.js"></script>
+<script type="module" src="../static/js/gnps/GnpsRequestProcess.js"></script>
 <script type="module">
-
 import { DropzoneListeners } from "../static/js/dropzone/DropzoneListeners.js";
 import { handlePcoaResponse } from "../static/js/Graph.js";
 
@@ -146,20 +151,6 @@ Dropzone.options.dropzoneForm = {
         new DropzoneListeners(dropzone,url,event).setupListeners();
     }
 };
-
-
-document.getElementById('clustering-form').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const formData = new FormData(this);
-        fetch('/graph', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            handlePcoaResponse(data);
-        })
-});
 
 
 function getCsvFromGnps(event){
