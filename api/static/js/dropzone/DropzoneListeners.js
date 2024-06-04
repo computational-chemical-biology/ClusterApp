@@ -12,8 +12,9 @@ export class DropzoneListeners {
           this._onAddedFile(file);
         });
 
-        this.dropzone.on("success", function(file, response) {
+        this.dropzone.on("success", (file, response)=> {
             handlePcoaResponse(response);
+            this.dropzone.removeFile(file);
           });
 
     }
