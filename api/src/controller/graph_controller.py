@@ -23,8 +23,8 @@ class GraphController:
     
 
     def executePost(self):
-        scalling = self.request.form['scaling']  if self.request.form['scaling'] != None else None
-        normalization = self.request.form['normalization'] if self.request.form['normalization'] != None else None
+        scalling = self.request.form['scaling'] 
+        normalization = self.request.form['normalization'] 
         dataProcessingConfig = DataProcessingConfig(self.request.form['metric'], scalling, normalization, self.request.form['taskid'])
 
         factory = PcoaFactory(session=self.session)

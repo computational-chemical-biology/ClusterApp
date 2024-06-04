@@ -13,8 +13,8 @@ class DropzoneUploadHanlder:
 
     def executeDropzoneUpload(self):
         file = self.request.files['file']
-        scalling = self.request.form['scaling']  if self.request.form['scaling'] != None else None
-        normalization = self.request.form['normalization'] if self.request.form['normalization'] != None else None
+        scalling = self.request.form['scaling'] 
+        normalization = self.request.form['normalization']
         dataProcessingConfig = DataProcessingConfig(self.request.form['metric'], scalling, normalization, None)
 
         fileId = uuid.uuid4()
