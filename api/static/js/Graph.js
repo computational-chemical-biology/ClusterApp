@@ -1,49 +1,32 @@
-function submitDropzone(event) {
-    const inputs = populeInputs();
-    
-    populeDragAndDropForm();
-    if(verifyForm(event,inputs) == false){
-        return;
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    const modalElement = document.getElementById('alert-modal');
+    removeModal(modalElement);
+});
 
-    document.getElementById("submit").hidden = true;
-}
-
-function populeInputs(){
-    const metric = document.getElementById('metric');
-    return [metric];
-}
-
-function populeDragAndDropForm(){
-    let sharedMetric = document.getElementById('shared-metric');
-    let sharedNormalization = document.getElementById('shared-normalization');
-    let sharedScaling = document.getElementById('shared-scaling');
-       
-    sharedMetric.value =  document.getElementById('metric').value;
-    sharedNormalization.value = document.getElementById('normalization').value;
-    sharedScaling.value = document.getElementById('scaling').value;
-
-}
-
-
-function verifyForm(event, inputs) {
-
-    for (let input of inputs) {
-        if (input.value === "") {
-            invalidInput(event,input);
-            return false;
+function removeModal(modalElement){
+    modalElement.addEventListener('hidden.bs.modal', function (event) {
+        document.body.classList.remove('modal-open');
+        const backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) {
+          backdrop.parentNode.removeChild(backdrop);
         }
-    }
-
-    return true;
+    });
 }
 
-function invalidInput(event, input) {
-    event.preventDefault(); 
-    input.style.border = "1px solid red";
+export function showModal() {
+    const modalElement = document.getElementById('alert-modal');
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+}
 
-    const optionElement = input.querySelector("option[value='']");
-    if (optionElement) {
-        optionElement.textContent = 'Please select a value';
-    }
+export function handlePcoaResponse(response){
+    document.getElementById("submit").hidden = false;
+    document.getElementById("editCsvButton").hidden = false;
+    document.getElementById("downloadPlot").hidden = false;
+    
+    const divPcoa = document.getElementById("pcoa-div");
+    const pcoaPlot = document.getElementById("pcoa-plot");
+    divPcoa.hidden = false;
+    pcoaPlot.hidden = false;
+    pcoaPlot.src = "static/"+response; 
 }

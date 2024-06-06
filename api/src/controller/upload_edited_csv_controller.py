@@ -30,5 +30,5 @@ class UploadEditedCsvController:
             return "File not found", 404    
         
         with open(file_path, 'rb') as file:
-            pcoa = self.pcoaFromFileService._handleFile(file,fileId,dataProcessingConfig)
+            pcoa = self.pcoaFromFileService.handleFile(file,fileId,dataProcessingConfig)
         return redirect(url_for('render_graph', pcoa=pcoa))

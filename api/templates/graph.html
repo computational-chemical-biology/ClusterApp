@@ -1,15 +1,10 @@
 {% extends "layout.html" %}
 
 {% block content %}
-{{ dropzone.load_css() }}
-{{ dropzone.style('border: 2px dashed #0087F7; margin: 5%; min-height: 100px;') }}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
 
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-    crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css"
     integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 
@@ -21,7 +16,7 @@
 
 <div class="container-fluid bg-1 text-center">
     <h4>Clustering inputs:</h4>
-    <form class="form-group" method=post action="/graph">
+    <form id="clustering-form" class="form-group" method=post action="/graph">
         <br>
         <label for="taskid">GNPS task ID:</label><br>
         <input type="text" id="taskid" name="taskid" value="" required><br>
@@ -53,7 +48,7 @@
         <br>
         <label for="normalization">normalization:</label><br>
         <select class="form-control-sm" id="normalization" name="normalization" value="">
-            <option value="">-- Select a normalization--</option>
+            <option value="">None</option>
             <option value="PQN">PQN</option>
             <option value="TIC">TIC</option>
 
@@ -62,16 +57,21 @@
         <br>
         <label for="scaling">scaling :</label><br>
         <select class="form-control-sm" id="scaling" name="scaling" value="">
-            <option value="">-- Select a scaling --</option>
+            <option value="">None</option>
             <option value="pareto">Pareto</option>
             <option value="autoscaling">Auto-Scaling</option>
 
         </select>
-
+        
+        
         <br>
+        <div id="loadin-spn" hidden="true" class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
         <br>
-
+        
         <div style="display: inline-flex; gap: 10px;">
+            
             <input class="btn btn-secondary" type="submit" value="Submit">
           <!--  <button class="btn btn-secondary" onclick="getCsvFromGnps(event)">CSV From GNPS</button> -->
         </div>
@@ -81,61 +81,76 @@
 <br>
 <br>
 
-{% if pcoa != None %}
-<div class="container-fluid bg-1 text-center">
+<div id="pcoa-div" hidden="true" class="container-fluid bg-1 text-center">
     <h3>PCoA analysis</h3>
-    <object type="text/html" style="width:100%;height:500px;" data="{{url_for('static', filename=pcoa | safe) }}">
-    </object>
+    <iframe id="pcoa-plot" type="text/html" style="width:100%;height:500px;">
+    </iframe>
 
 </div>
 
 <br>
 <br>
 
-<div class="form-group" style="text-align: center">
+<div id="downloadPlot" hidden="true" class="form-group" style="text-align: center">
     <a href="{{url_for('downloadplot')}}">
         <button type="button" class="btn btn-dark">Download Emperor plot</button>
     </a>
+    <br>
 </div class="container-fluid">
 
-{% endif %}
 
 <div class="container-fluid bg-1 text-center">
-    <form id="my-form" action="{{ url_for('uploadForm') }}" enctype="multipart/form-data" method="post">
-        {{ dropzone.create() }}
+    <button class="btn btn-secondary"  id="submit" hidden="true" >Submit and Upload</button>
+    <button id="editCsvButton" type="button" hidden="true" class="btn btn-secondary">Edit CSV</button>
+    <form  class="dropzone" id="dropzoneForm" action="{{ url_for('dropzoneUploadHandler') }}" enctype="multipart/form-data" method="post">
+        
         <input type="hidden" id="shared-metric" name="metric" value="">
         <input type="hidden" id="shared-normalization" name="normalization" value="">
         <input type="hidden" id="shared-scaling" name="scaling" value="">
-
-        <button class="btn btn-secondary"  id="submit" hidden="true"  onclick="submitDropzone(event)">Submit and Upload</button>
-        <button id="editCsvButton" type="button" hidden="true" class="btn btn-secondary">Edit CSV</button>
     </form>
 </div>
 
-{{ dropzone.load_js() }}
-{{ dropzone.config() }}
-
-<script src="../static/js/Graph.js"></script>
-<script>
 
 
-function redirect(file) {
-    document.getElementById("submit").hidden = true;
-    document.getElementById("editCsvButton").hidden = true;
-    let formData = new FormData();
-    formData.append('file', file);
-    let url = "{{url_for('mountDataTable')}}";
-    fetch(url, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        return response.url;
-    })
-    .then(redirectUrl => {
-        window.location.href = redirectUrl;
-    });
-}
+<div class="modal" id="alert-modal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="alertModalLabel">Alert</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Please ensure that Dissimilarity measure is filled and if you forget choose an normalization and scaling.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+<script type="module" src="../static/js/Graph.js"></script>
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+<script type="module" src="../static/js/dropzone/DropzoneValidator.js"></script>
+<script type="module" src="../static/js/gnps/GnpsRequestProcess.js"></script>
+<script type="module">
+import { DropzoneListeners } from "../static/js/dropzone/DropzoneListeners.js";
+import { handlePcoaResponse } from "../static/js/Graph.js";
+
+Dropzone.options.dropzoneForm = {
+    paramName: "file", 
+    maxFilesize: 25,
+    maxFiles: 1, 
+    acceptedFiles: ".csv", 
+    autoProcessQueue: false, 
+    dictDefaultMessage: 'Drop Down Your Archives Here To Generate The PCoA Plot', 
+    init: function() {
+        const dropzone = this;
+        let url = "{{url_for('mountDataTable')}}";
+        new DropzoneListeners(dropzone,url,event).setupListeners();
+    }
+};
 
 
 function getCsvFromGnps(event){
@@ -166,10 +181,8 @@ function getCsvFromGnps(event){
 
 }
 
-
 </script>
 
 
-{{ dropzone.config(custom_init='dz = this; dz.on("addedfile", function(file) {var button = document.getElementById("editCsvButton");  button.hidden = false;   document.getElementById("submit").hidden = false; button.onclick = function() {redirect(file);};}); ') }}
 
 {% endblock %}
