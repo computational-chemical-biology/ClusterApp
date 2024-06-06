@@ -35,9 +35,6 @@ def dropzoneUploadHandler():
 
 @app.route('/usage',methods=['GET'])
 def usage():
-    """
-        Returns: the usage.html template
-    """
     return render_template('usage.html')    
 
 @app.route('/mountDataTable', methods=['POST','GET'])
