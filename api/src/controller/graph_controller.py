@@ -25,7 +25,7 @@ class GraphController:
     def executePost(self):
         scalling = self.request.form['scaling'] 
         normalization = self.request.form['normalization'] 
-        dataProcessingConfig = DataProcessingConfig(self.request.form['metric'], scalling, normalization, self.request.form['taskid'])
+        dataProcessingConfig = DataProcessingConfig(self.request.form['metric'], scalling, normalization, self.request.form['taskid'],self.request.form['workflow'])
 
         factory = PcoaFactory(session=self.session)
         taskId =  factory.createPcoaFromGnps(dataProcessingConfig=dataProcessingConfig)

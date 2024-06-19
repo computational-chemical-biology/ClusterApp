@@ -15,7 +15,7 @@ class PcoaFactory:
 
     def createPcoaFromGnps(self,dataProcessingConfig:DataProcessingConfig):
         taskid = uuid.uuid4()
-        gnps_result = Proteosafe(dataProcessingConfig.taskId, 'FBMN')
+        gnps_result = Proteosafe(dataProcessingConfig.taskId, dataProcessingConfig.workflow)
         gnps_result.get_gnps()
         directory_path = os.path.join(os.getcwd(), 'api/static/downloads', str(taskid))
         if not os.path.exists(directory_path):

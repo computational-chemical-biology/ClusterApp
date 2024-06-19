@@ -19,7 +19,15 @@
     <form id="clustering-form" class="form-group" method=post action="/graph">
         <br>
         <label for="taskid">GNPS task ID:</label><br>
-        <input type="text" id="taskid" name="taskid" value="" required><br>
+        <div style="display: inline-flex; align-items: center; gap: 10px;">
+          <input type="text" id="taskid" name="taskid" value="" required>
+          <select class="form-control-sm" id="workflow" name="workflow" value="" required>
+              <option value="">-- Select a workflow type --</option>
+              <option value="FBMN">FBMN</option>
+              <option value="V2">V2</option>
+              <option value="FBMN-gnps2">FBMN-gnps2</option>
+          </select>
+      </div>
         <br>
         <label for="metric">Dissimilarity measure:</label><br>
         <select class="form-control-sm"  id="metric" name="metric" value="" required>
