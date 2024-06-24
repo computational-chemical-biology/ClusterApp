@@ -29,6 +29,6 @@ class CsvFromGnpsController:
         return path
         
     def _mergeDf(self,feat,meta):
-        df = pd.concat([meta,feat], axis=1, join="inner")
+        df = pd.concat([meta, feat], axis=1)
         df.fillna('empty', inplace=True)
         return df 
