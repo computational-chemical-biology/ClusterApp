@@ -5,7 +5,7 @@ export function submitDropzone(event,dropzoneInstance) {
     
     populeDragAndDropForm();
     if(verifyForm(event,inputs) == false){
-        showModal();
+        showModal("Please ensure that Dissimilarity measure is filled and if you forget choose an normalization and scaling.");
         return;
     }
     dropzoneInstance.processQueue();
