@@ -81,7 +81,7 @@
         <div style="display: inline-flex; gap: 10px;">
             
             <input class="btn btn-secondary" type="submit" value="Submit">
-          <!--  <button class="btn btn-secondary" onclick="getCsvFromGnps(event)">CSV From GNPS</button> -->
+            <!-- <button class="btn btn-secondary" onclick="getCsvFromGnps(event)">CSV From GNPS</button>--> 
         </div>
     </form>
 </div>
@@ -142,25 +142,7 @@
 <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
 <script type="module" src="../static/js/dropzone/DropzoneValidator.js"></script>
 <script type="module" src="../static/js/gnps/GnpsRequestProcess.js"></script>
-<script type="module">
-import { DropzoneListeners } from "../static/js/dropzone/DropzoneListeners.js";
-import { handlePcoaResponse } from "../static/js/Graph.js";
-
-Dropzone.options.dropzoneForm = {
-    paramName: "file", 
-    maxFilesize: 25,
-    maxFiles: 1, 
-    acceptedFiles: ".csv", 
-    autoProcessQueue: false, 
-    dictDefaultMessage: 'Drop Down Your Archives Here To Generate The PCoA Plot', 
-    init: function() {
-        const dropzone = this;
-        let url = "{{url_for('mountDataTable')}}";
-        new DropzoneListeners(dropzone,url,event).setupListeners();
-    }
-};
-
-
+<script> 
 function getCsvFromGnps(event){
     event.preventDefault();
     let taskId = document.getElementById('taskid').value;
@@ -188,6 +170,25 @@ function getCsvFromGnps(event){
     });
 
 }
+</script>
+
+<script type="module">
+import { DropzoneListeners } from "../static/js/dropzone/DropzoneListeners.js";
+import { handlePcoaResponse } from "../static/js/Graph.js";
+
+Dropzone.options.dropzoneForm = {
+    paramName: "file", 
+    maxFilesize: 25,
+    maxFiles: 1, 
+    acceptedFiles: ".csv", 
+    autoProcessQueue: false, 
+    dictDefaultMessage: 'Drop Down Your Archives Here To Generate The PCoA Plot', 
+    init: function() {
+        const dropzone = this;
+        let url = "{{url_for('mountDataTable')}}";
+        new DropzoneListeners(dropzone,url,event).setupListeners();
+    }
+};
 
 </script>
 
