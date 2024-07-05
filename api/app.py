@@ -87,6 +87,10 @@ def csv_from_gnps():
         as_attachment=True, 
         download_name='output.csv'
     )
+
+@app.route('/data_gathering', methods=['GET'])
+def data_gathering():
+    return render_template('dataGathering.html')
      
 
 @app.route('/error')

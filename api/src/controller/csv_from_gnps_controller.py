@@ -14,7 +14,8 @@ class CsvFromGnpsController:
     
     def get_csv_from_gnps(self):
         taskId = self.request.form.get('taskId')
-        gnps = Proteosafe(taskId, 'FBMN')
+        workflow = self.request.form.get('workflow')
+        gnps = Proteosafe(taskId, workflow)
         gnps.get_gnps()
         meta = gnps.meta
         feat = gnps.feat

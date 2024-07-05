@@ -81,7 +81,6 @@
         <div style="display: inline-flex; gap: 10px;">
             
             <input class="btn btn-secondary" type="submit" value="Submit">
-            <!-- <button class="btn btn-secondary" onclick="getCsvFromGnps(event)">CSV From GNPS</button>--> 
         </div>
     </form>
 </div>
@@ -142,35 +141,7 @@
 <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
 <script type="module" src="../static/js/dropzone/DropzoneValidator.js"></script>
 <script type="module" src="../static/js/gnps/GnpsRequestProcess.js"></script>
-<script> 
-function getCsvFromGnps(event){
-    event.preventDefault();
-    let taskId = document.getElementById('taskid').value;
-    let metric = document.getElementById('metric').value;
-    if(taskId == '' || metric == ''){
-        alert('Please fill in the task ID and select a dissimilarity measure');
-        return;
-    }
-    const formData = new FormData();
-    formData.append('taskId', taskId);
-    formData.append('metric', metric);
-    let url = "{{url_for('csv_from_gnps')}}";
-    
-    fetch(url, {
-        method: 'POST',
-        body: formData,
-    }).then(response => {
-      response.blob().then(blob => {
-        let url = window.URL.createObjectURL(blob);
-        let a = document.createElement('a');
-        a.href = url;
-        a.download = 'data.csv';
-        a.click();
-      });
-    });
 
-}
-</script>
 
 <script type="module">
 import { DropzoneListeners } from "../static/js/dropzone/DropzoneListeners.js";
