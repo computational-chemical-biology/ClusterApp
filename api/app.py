@@ -1,4 +1,4 @@
-from flask import Flask,  redirect, render_template, request, session,send_file, url_for
+from flask import Flask, jsonify,  redirect, render_template, request, session,send_file, url_for
 from api.src.controller.csv_from_gnps_controller import CsvFromGnpsController
 from api.src.controller.dropzone_upload_handler import DropzoneUploadHanlder
 from api.src.controller.graph_controller import GraphController
@@ -30,7 +30,7 @@ def dropzoneUploadHandler():
         controller = DropzoneUploadHanlder(request,session,app,PcoaFromFileService(session=session))
         return controller.executeDropzoneUpload()
     except Exception as e:
-        return redirect(url_for('error', error=str(e)))
+        return jsonify({'error': str(e)}), 500
     
 
 @app.route('/usage',methods=['GET'])
@@ -87,6 +87,10 @@ def csv_from_gnps():
         as_attachment=True, 
         download_name='output.csv'
     )
+
+@app.route('/data_gathering', methods=['GET'])
+def data_gathering():
+    return render_template('dataGathering.html')
      
 
 @app.route('/error')

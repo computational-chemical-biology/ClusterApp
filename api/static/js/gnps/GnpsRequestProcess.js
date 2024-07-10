@@ -1,4 +1,5 @@
 import { handlePcoaResponse } from '../Graph.js';
+import { showModal } from '../Graph.js';
 document.addEventListener('DOMContentLoaded', function() {
     requestListener();
 });
@@ -19,11 +20,12 @@ function requestExecutor(event,form){
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
-    .then(data => {
+    .then(async response => { 
+        const data = await response.json()
         handlePcoaResponse(data);
         document.getElementById('loadin-spn').hidden = true;
     }).catch(error => {
+        showModal("An error occurred while processing the request. Please try again.")
         document.getElementById('loadin-spn').hidden = true;
     });
 }

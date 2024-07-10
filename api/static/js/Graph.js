@@ -13,8 +13,10 @@ function removeModal(modalElement){
     });
 }
 
-export function showModal() {
+export function showModal(text) {
     const modalElement = document.getElementById('alert-modal');
+    const modalBodyElement = modalElement.querySelector('.modal-body');
+    modalBodyElement.textContent = text;
     const modal = new bootstrap.Modal(modalElement);
     modal.show();
 }

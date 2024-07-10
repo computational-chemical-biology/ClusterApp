@@ -1,4 +1,4 @@
-import { handlePcoaResponse } from "../Graph.js";
+import { handlePcoaResponse, showModal } from "../Graph.js";
 import { submitDropzone } from "./DropzoneValidator.js";
 export class DropzoneListeners {
 
@@ -13,9 +13,13 @@ export class DropzoneListeners {
         });
 
         this.dropzone.on("success", (file, response)=> {
-            handlePcoaResponse(response);
-            this.dropzone.removeFile(file);
-          });
+          handlePcoaResponse(response);
+          this.dropzone.removeFile(file);
+        });
+
+        this.dropzone.on("error", (file, errorMessage, xhr) => {
+          this._onError(file);
+        });
 
     }
 
@@ -48,7 +52,15 @@ export class DropzoneListeners {
       .then(redirectUrl => {
           window.location.href = redirectUrl;
       });
-  }
+    }
+
+    _onError(file){
+      this.dropzone.removeFile(file);
+      document.getElementById("submit").hidden = false;
+      showModal('An error occurred while processing the request. Please try again.');
+    }
+
+    
 
 }
 

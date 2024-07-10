@@ -19,7 +19,15 @@
     <form id="clustering-form" class="form-group" method=post action="/graph">
         <br>
         <label for="taskid">GNPS task ID:</label><br>
-        <input type="text" id="taskid" name="taskid" value="" required><br>
+        <div style="display: inline-flex; align-items: center; gap: 10px;">
+          <input type="text" id="taskid" name="taskid" value="" required>
+          <select class="form-control-sm" id="workflow" name="workflow" value="" required>
+              <option value="">-- Select a workflow type --</option>
+              <option value="FBMN">FBMN</option>
+              <option value="V2">V2</option>
+              <option value="FBMN-gnps2">FBMN-gnps2</option>
+          </select>
+      </div>
         <br>
         <label for="metric">Dissimilarity measure:</label><br>
         <select class="form-control-sm"  id="metric" name="metric" value="" required>
@@ -73,7 +81,6 @@
         <div style="display: inline-flex; gap: 10px;">
             
             <input class="btn btn-secondary" type="submit" value="Submit">
-          <!--  <button class="btn btn-secondary" onclick="getCsvFromGnps(event)">CSV From GNPS</button> -->
         </div>
     </form>
 </div>
@@ -120,7 +127,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          Please ensure that Dissimilarity measure is filled and if you forget choose an normalization and scaling.
+          An Error Occurred.
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -134,6 +141,8 @@
 <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
 <script type="module" src="../static/js/dropzone/DropzoneValidator.js"></script>
 <script type="module" src="../static/js/gnps/GnpsRequestProcess.js"></script>
+
+
 <script type="module">
 import { DropzoneListeners } from "../static/js/dropzone/DropzoneListeners.js";
 import { handlePcoaResponse } from "../static/js/Graph.js";
@@ -151,35 +160,6 @@ Dropzone.options.dropzoneForm = {
         new DropzoneListeners(dropzone,url,event).setupListeners();
     }
 };
-
-
-function getCsvFromGnps(event){
-    event.preventDefault();
-    let taskId = document.getElementById('taskid').value;
-    let metric = document.getElementById('metric').value;
-    if(taskId == '' || metric == ''){
-        alert('Please fill in the task ID and select a dissimilarity measure');
-        return;
-    }
-    const formData = new FormData();
-    formData.append('taskId', taskId);
-    formData.append('metric', metric);
-    let url = "{{url_for('csv_from_gnps')}}";
-    
-    fetch(url, {
-        method: 'POST',
-        body: formData,
-    }).then(response => {
-      response.blob().then(blob => {
-        let url = window.URL.createObjectURL(blob);
-        let a = document.createElement('a');
-        a.href = url;
-        a.download = 'data.csv';
-        a.click();
-      });
-    });
-
-}
 
 </script>
 

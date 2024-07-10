@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="container-fluid bg-1 text-center">
+    <h4>Data Gathering</h4>
+    <form id="clustering-form" class="form-group" method=post action="/">
+        <br>
+        <label for="taskid">GNPS task ID:</label><br>
+        <input type="text" id="taskid" name="taskid" value="" required>
+          
+        <br>
+        <br>
+
+        <select class="form-control-sm" id="workflow" name="workflow" value="" required>
+            <option value="">-- Select a workflow type --</option>
+            <option value="FBMN">FBMN</option>
+            <option value="V2">V2</option>
+            <option value="FBMN-gnps2">FBMN-gnps2</option>
+        </select>
+        <br>
+        <div id="loadin-spn" hidden="true" class="spinner-border" role="status">
+        </div>
+        <br>
+        <br>    
+        <button class="btn btn-secondary" onclick="getCsvFromGnps(event)">CSV From GNPS</button>
+
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+<script> 
+    function getCsvFromGnps(event){
+        event.preventDefault();
+        let taskId = document.getElementById('taskid').value;
+        let workflow = document.getElementById('workflow').value;
+        if(taskId == '' || workflow == ''){
+            alert('Please fill in the task ID and select a dissimilarity measure');
+            return;
+        }
+        document.getElementById('loadin-spn').hidden = false;
+
+        const formData = new FormData();
+        formData.append('taskId', taskId);
+        formData.append('workflow', workflow);
+        let url = "{{url_for('csv_from_gnps')}}";
+        
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+        }).then(response => {
+          response.blob().then(blob => {
+            let url = window.URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = 'data.csv';
+            a.click();
+            document.getElementById('loadin-spn').hidden = true;
+          });
+        });
+    
+    }
+    </script>
+{% endblock %}
