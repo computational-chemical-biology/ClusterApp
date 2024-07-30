@@ -13,7 +13,7 @@ export function submitDropzone(event,dropzoneInstance) {
 }
 
 function populeInputs(){
-    const metric = document.getElementById('metric');
+    const metric = document.getElementById('metric_dz');
     return [metric];
 }
 
@@ -22,9 +22,9 @@ function populeDragAndDropForm(){
     let sharedNormalization = document.getElementById('shared-normalization');
     let sharedScaling = document.getElementById('shared-scaling');
        
-    sharedMetric.value =  document.getElementById('metric').value;
-    sharedNormalization.value = document.getElementById('normalization').value;
-    sharedScaling.value = document.getElementById('scaling').value;
+    sharedMetric.value =  document.getElementById('metric_dz').value;
+    sharedNormalization.value = document.getElementById('normalization_dz').value;
+    sharedScaling.value = document.getElementById('scaling_dz').value;
 
 }
 

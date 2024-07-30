@@ -21,9 +21,15 @@
     {% include 'navbar.html' %}
 
     <div id="buttons-container" class="row  px-4 py-2">
-        <div class="col">
-            <button id="send-btn" hidden="true" class="btn btn-primary" onclick="sendButtonAction()" >Send</button>
+        <div class="col">            
+            <div>
+                <label for="columns" class="form-label">Select a column to filter:</label>
+                <select name="columns" id="columns" ></select>
+                
+            </div>
+            <input id="filterField" type="text" placeholder="Filter" />
             <button class="btn btn-secondary"  onclick="downloadCsvButtonAction()"  >Download</button>
+
         </div>
     </div>
     
@@ -51,6 +57,14 @@
             download: true,
             complete: (result) => {
                 if (result.data && result.data.length > 0) {
+                    let select = document.getElementById('columns');
+                    let columns = result.data[0];
+                    columns.forEach((column, index) => {
+                        let option = document.createElement('option');
+                        option.value = index;
+                        option.text = column;
+                        select.appendChild(option);
+                    }); 
                     renderHandsontable(result.data);
                 }
             }
@@ -74,8 +88,22 @@
         });
 
         hotInstace = hot
+        prepareFilter(hot);
     }
 
+    function prepareFilter(hot){
+        const filterField = document.querySelector('#filterField');
+        filterField.addEventListener('keyup', (event) => {
+            const filters = hot.getPlugin('filters');
+            const columnSelector = document.getElementById('columns');
+            const columnValue = columnSelector.value;
+
+            filters.removeConditions(columnValue);
+            filters.addCondition(columnValue, 'contains', [event.target.value]);
+            filters.filter();
+            hot.render();
+        });
+    }
 
     function sendButtonAction(){
         const sendButton = document.getElementById("send-btn");
@@ -128,9 +156,6 @@
         a.click();
         window.URL.revokeObjectURL(url);
     }
-
-    
-    
 
 </script>
 </body>
