@@ -7,84 +7,160 @@
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css"
     integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
-
+<style>
+    .divider {
+        border-left: 1px solid #dee2e6;
+    }
+</style>
 
 
 <h3>{{id}}</h3>
 <div id="{{ids}}"></div>
 
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
 
-<div class="container-fluid bg-1 text-center">
-    <h4>Clustering inputs:</h4>
-    <form id="clustering-form" class="form-group" method=post action="/graph">
-        <br>
-        <label for="taskid">GNPS task ID:</label><br>
-        <div style="display: inline-flex; align-items: center; gap: 10px;">
-          <input type="text" id="taskid" name="taskid" value="" required>
-          <select class="form-control-sm" id="workflow" name="workflow" value="" required>
-              <option value="">-- Select a workflow type --</option>
-              <option value="FBMN">FBMN</option>
-              <option value="V2">V2</option>
-              <option value="FBMN-gnps2">FBMN-gnps2</option>
-          </select>
-      </div>
-        <br>
-        <label for="metric">Dissimilarity measure:</label><br>
-        <select class="form-control-sm"  id="metric" name="metric" value="" required>
-            <option value="">-- Select a dissimilatiry--</option>
-            <option value="canberra">canberra</option>
-            <option value="braycurtis">braycurtis</option>
-            <option value="euclidean">euclidean</option>
-            <option value="seuclidean">seuclidean</option>
-            <option value="cityblock">cityblock</option>
-            <option value="chebyshev">chebyshev</option>
-            <option value="wminkowski">wminkowski</option>
-            <option value="correlation">correlation</option>
-            <option value="cosine">cosine</option>
-            <option value="dice">dice</option>
-            <option value="hamming">hamming</option>
-            <option value="jaccard">jaccard</option>
-            <option value="kulsinski">kulsinski</option>
-            <option value="mahalanobis">mahalanobis</option>
-            <option value="matching">matching</option>
-            <option value="rogerstanimoto">rogerstanimoto</option>
-            <option value="russellrao">russellrao</option>
-            <option value="sokalmichener">sokalmichener</option>
-            <option value="sokalsneath">sokalsneath</option>
-            <option value="yule">yule</option>
-        </select>
-        <br>
-        <label for="normalization">normalization:</label><br>
-        <select class="form-control-sm" id="normalization" name="normalization" value="">
-            <option value="">None</option>
-            <option value="PQN">PQN</option>
-            <option value="TIC">TIC</option>
+            <div class="container-fluid bg-1 text-center">
+                <h4>Analyze Your Data Using GNPS:</h4>
+                <form id="clustering-form" class="form-group" method=post action="/graph">
+                    <br>
+                    <label for="taskid">GNPS task ID:</label><br>
+                    <div style="display: inline-flex; align-items: center; gap: 10px;">
+                    <input type="text" id="taskid" name="taskid" value="" required>
+                    <select class="form-control-sm" id="workflow" name="workflow" value="" required>
+                        <option value="">-- Select a workflow type --</option>
+                        <option value="FBMN">FBMN</option>
+                        <option value="V2">V2</option>
+                        <option value="FBMN-gnps2">FBMN-gnps2</option>
+                    </select>
+                </div>
 
-        </select>
+                    <br>
+                    <label for="metric">Dissimilarity measure:</label><br>
+                    <select class="form-control-sm"  id="metric" name="metric" value="" required>
+                        <option value="">-- Select a dissimilatiry--</option>
+                        <option value="canberra">canberra</option>
+                        <option value="braycurtis">braycurtis</option>
+                        <option value="euclidean">euclidean</option>
+                        <option value="seuclidean">seuclidean</option>
+                        <option value="cityblock">cityblock</option>
+                        <option value="chebyshev">chebyshev</option>
+                        <option value="wminkowski">wminkowski</option>
+                        <option value="correlation">correlation</option>
+                        <option value="cosine">cosine</option>
+                        <option value="dice">dice</option>
+                        <option value="hamming">hamming</option>
+                        <option value="jaccard">jaccard</option>
+                        <option value="kulsinski">kulsinski</option>
+                        <option value="mahalanobis">mahalanobis</option>
+                        <option value="matching">matching</option>
+                        <option value="rogerstanimoto">rogerstanimoto</option>
+                        <option value="russellrao">russellrao</option>
+                        <option value="sokalmichener">sokalmichener</option>
+                        <option value="sokalsneath">sokalsneath</option>
+                        <option value="yule">yule</option>
+                    </select>
+                    <br>
+                    <label for="normalization">normalization:</label><br>
+                    <select class="form-control-sm" id="normalization" name="normalization" value="">
+                        <option value="">None</option>
+                        <option value="PQN">PQN</option>
+                        <option value="TIC">TIC</option>
 
-        <br>
-        <label for="scaling">scaling :</label><br>
-        <select class="form-control-sm" id="scaling" name="scaling" value="">
-            <option value="">None</option>
-            <option value="pareto">Pareto</option>
-            <option value="autoscaling">Auto-Scaling</option>
+                    </select>
 
-        </select>
-        
-        
-        <br>
-        <div id="loadin-spn" hidden="true" class="spinner-border" role="status">
-            <span class="sr-only">Loading...</span>
+                    <br>
+                    <label for="scaling">scaling :</label><br>
+                    <select class="form-control-sm" id="scaling" name="scaling" value="">
+                        <option value="">None</option>
+                        <option value="pareto">Pareto</option>
+                        <option value="autoscaling">Auto-Scaling</option>
+
+                    </select>
+                    
+                    
+                    <br>
+                    <div id="loadin-spn" hidden="true" class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <br>
+                    
+                    <div style="display: inline-flex; gap: 10px;">
+                        
+                        <input class="btn btn-secondary" type="submit" value="Submit">
+                    </div>
+                </form>
+            </div>
         </div>
-        <br>
+        <div class="col-md-1 d-none d-md-block divider"></div>
         
-        <div style="display: inline-flex; gap: 10px;">
-            
-            <input class="btn btn-secondary" type="submit" value="Submit">
+        <div class="col-md-5">
+            <div class="container-fluid bg-1 text-center">
+                <h4>Analyze Your Data Using a CSV File:</h4>
+                <label for="metric">Dissimilarity measure:</label><br>
+                    <select class="form-control-sm"  id="metric_dz" name="metric" value="" required>
+                        <option value="">-- Select a dissimilatiry--</option>
+                        <option value="canberra">canberra</option>
+                        <option value="braycurtis">braycurtis</option>
+                        <option value="euclidean">euclidean</option>
+                        <option value="seuclidean">seuclidean</option>
+                        <option value="cityblock">cityblock</option>
+                        <option value="chebyshev">chebyshev</option>
+                        <option value="wminkowski">wminkowski</option>
+                        <option value="correlation">correlation</option>
+                        <option value="cosine">cosine</option>
+                        <option value="dice">dice</option>
+                        <option value="hamming">hamming</option>
+                        <option value="jaccard">jaccard</option>
+                        <option value="kulsinski">kulsinski</option>
+                        <option value="mahalanobis">mahalanobis</option>
+                        <option value="matching">matching</option>
+                        <option value="rogerstanimoto">rogerstanimoto</option>
+                        <option value="russellrao">russellrao</option>
+                        <option value="sokalmichener">sokalmichener</option>
+                        <option value="sokalsneath">sokalsneath</option>
+                        <option value="yule">yule</option>
+                    </select>
+                    <br>
+                    <label for="normalization_dz">normalization:</label><br>
+                    <select class="form-control-sm" id="normalization_dz" name="normalization" value="">
+                        <option value="">None</option>
+                        <option value="PQN">PQN</option>
+                        <option value="TIC">TIC</option>
+
+                    </select>
+
+                    <br>
+                    <label for="scaling_dz">scaling :</label><br>
+                    <select class="form-control-sm" id="scaling_dz" name="scaling" value="">
+                        <option value="">None</option>
+                        <option value="pareto">Pareto</option>
+                        <option value="autoscaling">Auto-Scaling</option>
+
+                    </select>
+                    
+                    
+                    <br>
+                    <div id="loadin-spn" hidden="true" class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+            </div>
+        
+        
+            <div class="container-fluid bg-1 text-center p-5">
+                <button class="btn btn-secondary"  id="submit" hidden="true" >Submit and Upload</button>
+                <button id="editCsvButton" type="button" hidden="true" class="btn btn-secondary">Edit CSV</button>
+                <form  class="dropzone" id="dropzoneForm" action="{{ url_for('dropzoneUploadHandler') }}" enctype="multipart/form-data" method="post">
+                    
+                    <input type="hidden" id="shared-metric" name="metric" value="">
+                    <input type="hidden" id="shared-normalization" name="normalization" value="">
+                    <input type="hidden" id="shared-scaling" name="scaling" value="">
+                </form>
+            </div>
         </div>
-    </form>
+    </div>
 </div>
-
 <br>
 <br>
 
@@ -106,16 +182,7 @@
 </div class="container-fluid">
 
 
-<div class="container-fluid bg-1 text-center">
-    <button class="btn btn-secondary"  id="submit" hidden="true" >Submit and Upload</button>
-    <button id="editCsvButton" type="button" hidden="true" class="btn btn-secondary">Edit CSV</button>
-    <form  class="dropzone" id="dropzoneForm" action="{{ url_for('dropzoneUploadHandler') }}" enctype="multipart/form-data" method="post">
-        
-        <input type="hidden" id="shared-metric" name="metric" value="">
-        <input type="hidden" id="shared-normalization" name="normalization" value="">
-        <input type="hidden" id="shared-scaling" name="scaling" value="">
-    </form>
-</div>
+
 
 
 
