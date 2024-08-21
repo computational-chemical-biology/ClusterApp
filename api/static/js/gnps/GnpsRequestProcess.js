@@ -21,11 +21,22 @@ function requestExecutor(event,form){
         body: formData
     })
     .then(async response => { 
+        console.log(response);
+        console.log('status: '+response.status);
+        if(response.status == 500){
+            showError('Problems to get data from GNPS please try again later');
+            return;
+        }
         const data = await response.json()
         handlePcoaResponse(data);
         document.getElementById('loadin-spn').hidden = true;
     }).catch(error => {
-        showModal("An error occurred while processing the request. Please try again.")
-        document.getElementById('loadin-spn').hidden = true;
+        showError("An error occurred while processing the request. Please try again.");
     });
+    
+}
+
+function showError(text){
+    showModal(text);
+    document.getElementById('loadin-spn').hidden = true;
 }

@@ -5,6 +5,8 @@ import xmltodict
 import json
 from pyteomics import mgf
 
+from api.src.utils.GnpsRequestException import GnpsRequestException
+
 def read_spectra(url_to_spectra):
     spectra = []
     with mgf.MGF(io.StringIO(requests.get(url_to_spectra).text)) as reader:
@@ -47,12 +49,23 @@ class Proteosafe:
         gdict = {}
 
         if workflow=='FBMN':
-            url_to_attributes = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=clusterinfo_summary/" % (taskid[0])
-            url_to_db = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=DB_result/" % (taskid[0])
-            url_to_edges = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=networking_pairs_results_file_filtered/" % (taskid[0])
-            url_to_features = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=quantification_table/" % (taskid[0])
-            url_to_metadata = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=metadata_table/" % (taskid[0])
-            url_to_spectra = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=spec/" % (taskid[0])
+            self._FBMN_request(taskid)
+        elif workflow=='V2':
+            self._V2_request(taskid)
+        elif workflow=='FBMN-gnps2':
+            self._FBMN_gnps2(taskid)
+        else:
+            raise Exception("Unknown workflow type")
+
+
+    def _FBMN_request(self,taskid):
+        url_to_attributes = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=clusterinfo_summary/" % (taskid[0])
+        url_to_db = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=DB_result/" % (taskid[0])
+        url_to_edges = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=networking_pairs_results_file_filtered/" % (taskid[0])
+        url_to_features = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=quantification_table/" % (taskid[0])
+        url_to_metadata = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=metadata_table/" % (taskid[0])
+        url_to_spectra = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=spec/" % (taskid[0])
+        try:
             self.gnps = pd.read_csv(io.StringIO(requests.get(url_to_attributes).text), sep='\t')
             self.dbmatch = pd.read_csv(io.StringIO(requests.get(url_to_db).text), sep='\t')
             self.dbmatch = self.dbmatch.dropna(subset = ["INCHI"]).loc[(self.dbmatch.INCHI != " ") & (self.dbmatch.INCHI != "")]
@@ -70,11 +83,17 @@ class Proteosafe:
             else:
                 self.gnps1 = None
                 self.net1 = None
-        elif workflow=='V2':
-            url_to_attributes = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=clusterinfosummarygroup_attributes_withIDs_withcomponentID/" % (taskid[0])
-            url_to_db = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=result_specnets_DB/" % (taskid[0])
-            url_to_edges = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=networkedges_selfloop/" % (taskid[0])
-            url_to_spectra = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=spectra/specs_ms.mgf" % (taskid[0])
+        except:
+            raise GnpsRequestException("Error in FBMN request")
+
+
+
+    def _V2_request(self,taskid):
+        url_to_attributes = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=clusterinfosummarygroup_attributes_withIDs_withcomponentID/" % (taskid[0])
+        url_to_db = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=result_specnets_DB/" % (taskid[0])
+        url_to_edges = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=networkedges_selfloop/" % (taskid[0])
+        url_to_spectra = "http://gnps.ucsd.edu/ProteoSAFe/DownloadResultFile?task=%s&block=main&file=spectra/specs_ms.mgf" % (taskid[0])
+        try:
             self.gnps = pd.read_csv(io.StringIO(requests.get(url_to_attributes).text), sep='\t')
             self.dbmatch = pd.read_csv(io.StringIO(requests.get(url_to_db).text), sep='\t')
             self.dbmatch = self.dbmatch.dropna(subset = ["INCHI"]).loc[(self.dbmatch.INCHI != " ") & (self.dbmatch.INCHI != "")]
@@ -90,15 +109,20 @@ class Proteosafe:
             else:
                 self.gnps1 = None
                 self.net1 = None
-        elif workflow=='FBMN-gnps2':
-            base_url = 'https://gnps2.org/resultfile?task='
+        except:
+            raise GnpsRequestException("Error in V2 request")
+
+    
+    def _FBMN_gnps2(self,taskid):
+        base_url = 'https://gnps2.org/resultfile?task='
             #url_to_attributes = f'{base_url}{taskid[0]}&file=nf_output/clustering/clustersummary.tsv'
-            url_to_attributes = f'{base_url}{taskid[0]}&file=nf_output/networking/clustersummary_with_network.tsv'
-            url_to_db = f'{base_url}{taskid[0]}&file=nf_output/library/merged_results_with_gnps.tsv'
-            url_to_edges = f'{base_url}{taskid[0]}&file=nf_output/networking/filtered_pairs.tsv'
-            url_to_spectra = f'{base_url}{taskid[0]}&file=nf_output/clustering/specs_ms.mgf'
-            url_to_features = f'{base_url}{taskid[0]}&file=nf_output/clustering/featuretable_reformated.csv'
-            url_to_metadata = f'{base_url}{taskid[0]}&file=nf_output/metadata/merged_metadata.tsv'
+        url_to_attributes = f'{base_url}{taskid[0]}&file=nf_output/networking/clustersummary_with_network.tsv'
+        url_to_db = f'{base_url}{taskid[0]}&file=nf_output/library/merged_results_with_gnps.tsv'
+        url_to_edges = f'{base_url}{taskid[0]}&file=nf_output/networking/filtered_pairs.tsv'
+        url_to_spectra = f'{base_url}{taskid[0]}&file=nf_output/clustering/specs_ms.mgf'
+        url_to_features = f'{base_url}{taskid[0]}&file=nf_output/clustering/featuretable_reformated.csv'
+        url_to_metadata = f'{base_url}{taskid[0]}&file=nf_output/metadata/merged_metadata.tsv'
+        try:
             self.gnps = pd.read_csv(io.StringIO(requests.get(url_to_attributes).text), sep='\t')
             self.gnps = self.gnps[~self.gnps['cluster index'].duplicated()]
             self.dbmatch = pd.read_csv(io.StringIO(requests.get(url_to_db).text), sep='\t')
@@ -109,8 +133,9 @@ class Proteosafe:
             self.spectra = read_spectra(url_to_spectra)
             self.feat = pd.read_csv(io.StringIO(requests.get(url_to_features).text))
             self.meta = pd.read_csv(io.StringIO(requests.get(url_to_metadata).text), sep='\t')
-        else:
-            raise Exception("Unknown workflow type")
+        except:
+            raise GnpsRequestException("Error in FBMN-gnps2 request")
+        
 
     def get_nap(self):
         """ Sends a request to ProteoSAFe.

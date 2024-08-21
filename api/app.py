@@ -4,6 +4,7 @@ from api.src.controller.dropzone_upload_handler import DropzoneUploadHanlder
 from api.src.controller.graph_controller import GraphController
 from api.src.controller.upload_edited_csv_controller import UploadEditedCsvController
 from api.src.service.pcoa_from_file_service import PcoaFromFileService
+from api.src.utils.GnpsRequestException import GnpsRequestException
 from api.src.utils.utils import createFile, getFile
 
 app = Flask(__name__)
@@ -12,8 +13,13 @@ app.config['UPLOADED_PATH'] = '/ClusterApp/api/static/downloads',
 
 @app.route('/graph', methods=['GET', 'POST'])
 def graph():  
-    controller = GraphController(request,session,app)
-    return controller.executeGraph()
+    try:
+        controller = GraphController(request,session,app)
+        return controller.executeGraph()
+    except GnpsRequestException as e:
+        return 'Gnps Error', 500
+    except Exception as e:
+        return 'internal server error',500
     
 @app.route('/downloadplot')
 def downloadplot():
