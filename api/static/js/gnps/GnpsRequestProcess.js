@@ -21,8 +21,6 @@ function requestExecutor(event,form){
         body: formData
     })
     .then(async response => { 
-        console.log(response);
-        console.log('status: '+response.status);
         if(response.status == 500){
             showError('Problems to get data from GNPS please try again later');
             return;

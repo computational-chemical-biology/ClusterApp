@@ -27,10 +27,9 @@ class PcoaFactory:
 
     def createPcoaFromFile(self, file, taskId, dataProcessingConfig:DataProcessingConfig):
         dataframe = pd.read_csv(file)
-
         pathToRemove = os.path.join(os.getcwd(), 'api/static/downloads', str(taskId))
         if os.path.exists(pathToRemove):
-            os.remove(pathToRemove)
+           os.remove(pathToRemove)
 
         self._normalizeDataFrame(dataframe)
         pcoaObject = self._reformatTable(feat_table=dataframe, taskId=taskId,dataProcessingConfig=dataProcessingConfig)

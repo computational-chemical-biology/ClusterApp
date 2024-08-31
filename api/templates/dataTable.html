@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ClusterApp - dataTable</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css"
         integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css">
 
     
     
@@ -29,9 +27,101 @@
             </div>
             <input id="filterField" type="text" placeholder="Filter" />
             <button class="btn btn-secondary"  onclick="downloadCsvButtonAction()"  >Download</button>
+            <button class="btn btn-secondary"  onclick="showModal('analysis-modal')"  >Generate Plot</button>
 
         </div>
     </div>
+
+    <div class="modal" id="analysis-modal" tabindex="-1" aria-labelledby="analysisModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="analysisModalLabel">Analyze Your Data</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid text-center">
+                        <h4>Please Insert Your Data Parameters:</h4>
+                        
+                        <label for="metric">Dissimilarity measure:</label><br>
+                        <select class="form-control-sm" id="metric_dz" name="metric" required>
+                            <option value="">-- Select a dissimilarity --</option>
+                            <option value="canberra">canberra</option>
+                            <option value="braycurtis">braycurtis</option>
+                            <option value="euclidean">euclidean</option>
+                            <option value="seuclidean">seuclidean</option>
+                            <option value="cityblock">cityblock</option>
+                            <option value="chebyshev">chebyshev</option>
+                            <option value="wminkowski">wminkowski</option>
+                            <option value="correlation">correlation</option>
+                            <option value="cosine">cosine</option>
+                            <option value="dice">dice</option>
+                            <option value="hamming">hamming</option>
+                            <option value="jaccard">jaccard</option>
+                            <option value="kulsinski">kulsinski</option>
+                            <option value="mahalanobis">mahalanobis</option>
+                            <option value="matching">matching</option>
+                            <option value="rogerstanimoto">rogerstanimoto</option>
+                            <option value="russellrao">russellrao</option>
+                            <option value="sokalmichener">sokalmichener</option>
+                            <option value="sokalsneath">sokalsneath</option>
+                            <option value="yule">yule</option>
+                        </select>
+                        
+                        <br><br>
+                        
+                        <label for="normalization_dz">Normalization:</label><br>
+                        <select class="form-control-sm" id="normalization_dz" name="normalization">
+                            <option value="">None</option>
+                            <option value="PQN">PQN</option>
+                            <option value="TIC">TIC</option>
+                        </select>
+                        
+                        <br><br>
+                        
+                        <label for="scaling_dz">Scaling:</label><br>
+                        <select class="form-control-sm" id="scaling_dz" name="scaling">
+                            <option value="">None</option>
+                            <option value="pareto">Pareto</option>
+                            <option value="autoscaling">Auto-Scaling</option>
+                        </select>
+                        
+                        <br><br>
+                        
+                        <div id="loading-spn" hidden="true" class="spinner-border" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="sendButtonAction()" id="submit-btn">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal" id="pcoa-modal" tabindex="-1" aria-labelledby="pcoaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="pcoaModalLabel">PCoA Analysis</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="pcoa-div" class="container-fluid bg-1 text-center">
+                        <h3>PCoA Analysis</h3>
+                        <iframe id="pcoa-plot" type="text/html" style="width:100%;height:500px;"></iframe>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     
 
     <div id="csv-preview" style="  padding-top: 20px; background-color: #f0f0f0;">
@@ -39,7 +129,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.0.0/papaparse.min.js"></script>
     <script>
@@ -47,7 +137,6 @@
     let hotInstace = undefined
 
     function loadScreen() {
-
         let url = "{{ url_for('download_csv')}}";
         processCSV(url);
     }
@@ -105,29 +194,39 @@
         });
     }
 
-    function sendButtonAction(){
-        const sendButton = document.getElementById("send-btn");
-        sendButton.disabled = true;
-        sendButton.hidden = true; 
-        sendCsvToServer();
+    function sendButtonAction() {
+        const metricValue = document.getElementById('metric_dz').value;
+        const normalizationValue = document.getElementById('normalization_dz').value;
+        const scalingValue = document.getElementById('scaling_dz').value;
+
+        const file = prepareBlob();
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('metric', metricValue);
+        formData.append('normalization', normalizationValue);
+        formData.append('scaling', scalingValue);
+
+        sendCsvToServer(formData);
     }
 
 
-    function sendCsvToServer() {
-        const file = prepareBlob();
-        const url = "{{ url_for('uploadEditedCsv')}}"; 
-        const formData = new FormData();
-        formData.append('file', file);
+    function sendCsvToServer(data) {
+        const url = "/uploadEditedCsv"; 
         fetch(url, {
             method: 'POST',
-            body: formData
+            body: data
         })
-        .then(response => {
-            return response.url; 
-        })
-        .then(templateUrl => {
-            window.location.href = templateUrl; 
-        }); 
+        .then(response =>{
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json()
+        }
+        ).then(data => {
+        showPcoaModal(data.pcoa);
+        hideModal('analysis-modal');
+      });
     }
 
     function prepareBlob(data, colData) {
@@ -155,6 +254,25 @@
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
+    }
+
+    function showPcoaModal(data) {
+        const pcoaModalPlot = document.getElementById("pcoa-plot");
+        pcoaModalPlot.src = "static/"+data; 
+
+        showModal("pcoa-modal");
+    }
+
+    function showModal(modalId) {
+        const modalElement = document.getElementById(modalId);
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+    }
+
+    function hideModal(modalId) {
+        const modalElement = document.getElementById(modalId);
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        modal.hide();
     }
 
 </script>
