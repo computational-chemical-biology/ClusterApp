@@ -11,7 +11,7 @@ class TestGnpsService(unittest.TestCase):
 
     def test_FBMN_get_gnps_request(self):
         workflow = 'FBMN'
-        task_id = 'a0b4377f6e4540268602c30fedf69b0b'
+        task_id = 'your-task-id'
         gnps = Proteosafe(workflow=workflow, taskid=task_id)
         gnps.get_gnps()
         meta = gnps.meta
