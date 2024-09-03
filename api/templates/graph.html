@@ -13,8 +13,6 @@
     }
 </style>
 
-
-
 <div class="container">
     <div class="row">
         <div class="col-md-6">
@@ -147,8 +145,10 @@
         
         
             <div class="container-fluid bg-1 text-center p-5">
-                <button class="btn btn-secondary"  id="submit" hidden="true" >Submit and Upload</button>
-                <button id="editCsvButton" type="button" hidden="true" class="btn btn-secondary">Edit CSV</button>
+                <div class="pb-2">
+                    <button class="btn btn-secondary"  id="submit" hidden="true" >Submit and Upload</button>
+                    <button id="editCsvButton" type="button" hidden="true" class="btn btn-secondary">Edit CSV</button>
+                </div>
                 <form  class="dropzone" id="dropzoneForm" action="{{ url_for('dropzoneUploadHandler') }}" enctype="multipart/form-data" method="post">
                     
                     <input type="hidden" id="shared-metric" name="metric" value="">
@@ -164,7 +164,7 @@
 
 <div id="pcoa-div" hidden="true" class="container-fluid bg-1 text-center">
     <h3>PCoA analysis</h3>
-    <iframe id="pcoa-plot" type="text/html" style="width:100%;height:500px;">
+    <iframe id="pcoa-plot" type="text/html" style="width:100%; height:800px;">
     </iframe>
 
 </div>
@@ -178,10 +178,6 @@
     </a>
     <br>
 </div class="container-fluid">
-
-
-
-
 
 
 <div class="modal" id="alert-modal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
@@ -217,6 +213,7 @@ Dropzone.options.dropzoneForm = {
     maxFilesize: 25,
     maxFiles: 1, 
     acceptedFiles: ".csv", 
+    addRemoveLinks : true,
     autoProcessQueue: false, 
     dictDefaultMessage: 'Drop Down Your Archives Here To Generate The PCoA Plot', 
     init: function() {
