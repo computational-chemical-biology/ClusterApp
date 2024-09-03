@@ -72,7 +72,7 @@ def uploadEditedCsv():
         controller = UploadEditedCsvController(request,session,app,PcoaFromFileService(session=session))
         return jsonify({'pcoa':controller.executeUploadEditedCsv()})
     except Exception as e:
-       return redirect(url_for('error', error=e))
+        return 'internal server error',500
     
 @app.route('/render_graph')
 def render_graph():
