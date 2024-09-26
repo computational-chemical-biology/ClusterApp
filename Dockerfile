@@ -5,7 +5,10 @@ ENV INSTALL_PATH /ClusterApp
 RUN mkdir -p $INSTALL_PATH
 WORKDIR $INSTALL_PATH
 
+#for production
 RUN pip install flask gunicorn pyteomics plotly jupyter Flask-Dropzone
+#for testing
+#RUN pip install flask gunicorn pyteomics plotly jupyter Flask-Dropzone pytest
 
 COPY . .
 EXPOSE 5004

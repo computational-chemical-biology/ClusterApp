@@ -9,7 +9,7 @@ from api.src.utils.utils import createFile, getFile
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-app.config['UPLOADED_PATH'] = '/ClusterApp/api/static/downloads',
+app.config['UPLOADED_PATH'] = '/ClusterApp/api/static/downloads'
 
 @app.route('/graph', methods=['GET', 'POST'])
 def graph():  
@@ -70,9 +70,9 @@ def download_csv():
 def uploadEditedCsv():
     try:
         controller = UploadEditedCsvController(request,session,app,PcoaFromFileService(session=session))
-        return controller.executeUploadEditedCsv()
+        return jsonify({'pcoa':controller.executeUploadEditedCsv()})
     except Exception as e:
-        return redirect(url_for('error', error=e))
+        return 'internal server error',500
     
 @app.route('/render_graph')
 def render_graph():

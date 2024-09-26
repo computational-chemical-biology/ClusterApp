@@ -58,12 +58,16 @@ def createFile(request,session,app):
     file = None
     for key, f in request.files.items():
         file = f
+
     if file is None:
-        return '', 400
-        
-        
+        return 'no file on request', 400
+    
+    executeFileCreation(session,file)
+    
+
+def executeFileCreation(session,file):
     if not os.path.exists('/ClusterApp/api/static/downloads'):
-        os.makedirs('/ClusterApp/api/static/downloads', exist_ok=True)    
+            os.makedirs('/ClusterApp/api/static/downloads', exist_ok=True)    
 
     fileId = str(uuid.uuid4())
     session['fileId'] = fileId
