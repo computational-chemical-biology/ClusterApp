@@ -21,11 +21,16 @@ function populeDragAndDropForm(){
     let sharedMetric = document.getElementById('shared-metric');
     let sharedNormalization = document.getElementById('shared-normalization');
     let sharedScaling = document.getElementById('shared-scaling');
-       
+    let sharedPropBlanksFeats = document.getElementById('shared-prop_blank_feats');
+    let sharedPropSamples = document.getElementById('shared-prop_samples');
+    let sharedCheckBox = document.getElementById('shared-filter_blanks_ch_dz');
+
     sharedMetric.value =  document.getElementById('metric_dz').value;
     sharedNormalization.value = document.getElementById('normalization_dz').value;
     sharedScaling.value = document.getElementById('scaling_dz').value;
-
+    sharedPropBlanksFeats.value = document.getElementById('prop_blank_feats_dz').value;
+    sharedPropSamples.value = document.getElementById('prop_samples_dz').value;
+    sharedCheckBox.value = document.getElementById('filter_blanks_ch_dz').checked;
 }
 
 
