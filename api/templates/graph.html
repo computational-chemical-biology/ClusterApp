@@ -79,7 +79,7 @@
                     <div class="p-2">
                         <div>
                             <label for="shared">Filter Blanks:</label>
-                            <input type="checkbox" id="shared" name="shared" value="shared">
+                            <input type="checkbox" id="shared" name="shared"  onclick="toggleInputs('shared', 'prop_samples')">
                         </div>
                         <div class="row">
                             <div class="col">
@@ -87,7 +87,7 @@
                                 <input id="prop_blank_feats" name="prop_blank_feats" type="number" min="0" max="1" step="0.10" class="form-control">
                             </div>
                             <div class="col">
-                                <label for="prop_blank_feats">Blank Samples:</label>
+                                <label for="prop_samples">Blank Samples:</label>
                                 <input id="prop_samples" name="prop_samples" type="number" min="0" max="1" step="0.10" class="form-control">
                             </div>
                         </div>
@@ -156,7 +156,7 @@
                     <div class="p-2"></div>
                         <div>
                             <label for="filter_blanks_ch_dz">Filter Blanks:</label>
-                            <input type="checkbox" id="filter_blanks_ch_dz" name="shared" value="shared">
+                            <input type="checkbox" id="filter_blanks_ch_dz" name="filter_blanks_ch_dz" value="filter_blanks_ch_dz" onclick="toggleInputs('filter_blanks_ch_dz', 'prop_samples_dz')">
                         </div>
                         <div class="row">
                             <div class="col">
@@ -239,15 +239,15 @@
 <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
 <script type="module" src="../static/js/dropzone/DropzoneValidator.js"></script>
 <script type="module" src="../static/js/gnps/GnpsRequestProcess.js"></script>
-
+<script src="../static/js/ToggleInputs.js"></script>
 
 <script type="module">
 import { DropzoneListeners } from "../static/js/dropzone/DropzoneListeners.js";
 import { handlePcoaResponse } from "../static/js/Graph.js";
-import { toggleInputs } from '../static/js/Graph.js';
+// import { toggleInputs } from '../static/js/Graph.js';
 
-document.getElementById('shared').addEventListener('click', toggleInputs.bind(null,'shared', 'prop_samples'));
-document.getElementById('filter_blanks_ch_dz').addEventListener('click', toggleInputs.bind(null,'filter_blanks_ch_dz', 'prop_samples_dz'));
+// document.getElementById('shared').addEventListener('click', toggleInputs.bind(null,'shared', 'prop_samples'));
+// document.getElementById('filter_blanks_ch_dz').addEventListener('click', toggleInputs.bind(null,'filter_blanks_ch_dz', 'prop_samples_dz'));
 
 Dropzone.options.dropzoneForm = {
     paramName: "file", 

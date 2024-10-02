@@ -85,7 +85,23 @@
                             <option value="pareto">Pareto</option>
                             <option value="autoscaling">Auto-Scaling</option>
                         </select>
-                        <br><br>
+                        
+                        <div class="p-2">
+                            <div>
+                                <label for="shared">Filter Blanks:</label>
+                                <input type="checkbox" id="shared" name="shared"  onclick="toggleInputs('shared', 'prop_samples')">
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="prop_blank_feats">Blank Feats:</label>
+                                    <input id="prop_blank_feats" name="prop_blank_feats" type="number" min="0" max="1" step="0.10" class="form-control">
+                                </div>
+                                <div class="col">
+                                    <label for="prop_samples">Blank Samples:</label>
+                                    <input id="prop_samples" name="prop_samples" type="number" min="0" max="1" step="0.10" class="form-control">
+                                </div>
+                            </div>
+                        </div>
                         
                         <div id="loading-spn" hidden="true" class="spinner-border" role="status">
                             <span class="sr-only">Loading...</span>
@@ -122,7 +138,7 @@
     
     
 
-    <div id="csv-preview" style="  padding-top: 20px; background-color: #f0f0f0;">
+    <div id="csv-preview" style="padding-top: 20px; background-color: #f0f0f0;">
       
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 
@@ -131,6 +147,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.0.0/papaparse.min.js"></script>
     <script src="../static/js/DataTable.js"></script>
+    <script src="../static/js/ToggleInputs.js"></script>
     <script>
     
     let hotInstace = undefined
@@ -198,6 +215,10 @@
         const metricValue = metricInput.value;
         const normalizationValue = document.getElementById('normalization_dz').value;
         const scalingValue = document.getElementById('scaling_dz').value;
+        const propBlankFeats = document.getElementById('prop_blank_feats').value;
+        const propSamples = document.getElementById('prop_samples').value;
+        const shared = document.getElementById('shared').checked;
+
         if(metricValue === ""){
             invalidInput(metricInput);
             return;
@@ -210,7 +231,9 @@
         formData.append('metric', metricValue);
         formData.append('normalization', normalizationValue);
         formData.append('scaling', scalingValue);
-
+        formData.append('prop_blank_feats', propBlankFeats);
+        formData.append('prop_samples', propSamples);
+        formData.append('shared', shared);
         sendCsvToServer(formData);
     }
 

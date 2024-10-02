@@ -19,6 +19,3 @@ class NormalizationFactory:
         #in case of no normalization just return the original dataframe
         else:
             return df
-
-
-    
