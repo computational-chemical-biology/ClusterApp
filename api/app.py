@@ -1,6 +1,7 @@
+import traceback
 from flask import Flask, jsonify,  redirect, render_template, request, session,send_file, url_for
 from api.src.controller.csv_from_gnps_controller import CsvFromGnpsController
-from api.src.controller.dropzone_upload_handler import DropzoneUploadHanlder
+from api.src.controller.dropzone_upload_handler import DropzoneUploadHandler
 from api.src.controller.graph_controller import GraphController
 from api.src.controller.upload_edited_csv_controller import UploadEditedCsvController
 from api.src.service.pcoa_from_file_service import PcoaFromFileService
@@ -17,9 +18,10 @@ def graph():
         controller = GraphController(request,session,app)
         return controller.executeGraph()
     except GnpsRequestException as e:
-        return 'Gnps Error', 500
+        return e, 500
     except Exception as e:
-        return 'internal server error',500
+        stack_trace = traceback.format_exc()
+        return jsonify({'error': 'An internal error occurred', 'details': str(e), 'trace': stack_trace}), 500
     
 @app.route('/downloadplot')
 def downloadplot():
@@ -33,7 +35,7 @@ def downloadplot():
 @app.route('/dropzoneUploadHandler', methods=['POST'])
 def dropzoneUploadHandler():
     try:
-        controller = DropzoneUploadHanlder(request,session,app,PcoaFromFileService(session=session))
+        controller = DropzoneUploadHandler(request,session,app,PcoaFromFileService(session=session))
         return controller.executeDropzoneUpload()
     except Exception as e:
         return jsonify({'error': str(e)}), 500

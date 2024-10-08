@@ -1,4 +1,5 @@
 from flask import jsonify, render_template
+from api.src.model.FilterBlanks import FilterBlanks
 from api.src.model.DataProcessingConfig import DataProcessingConfig
 from api.src.utils.PcoaFactory import PcoaFactory
 
@@ -25,10 +26,17 @@ class GraphController:
     def executePost(self):
         scalling = self.request.form['scaling'] 
         normalization = self.request.form['normalization'] 
-        dataProcessingConfig = DataProcessingConfig(self.request.form['metric'], scalling, normalization, self.request.form['taskid'],self.request.form['workflow'])
+        filterBlanks = self._createFilterBlanks()
+        dataProcessingConfig = DataProcessingConfig(self.request.form['metric'], scalling, normalization, self.request.form['taskid'],self.request.form['workflow'],filterBlanks)
 
         factory = PcoaFactory(session=self.session)
         taskId =  factory.createPcoaFromGnps(dataProcessingConfig=dataProcessingConfig)
         return f'downloads/{taskId}/index.html'
 
+    def _createFilterBlanks(self):
+        shared = True if self.request.form.get('shared', None) == 'on' else False
+        prop_blank_feats = self.request.form.get('prop_blank_feats',None)
+        prop_samples = self.request.form.get('prop_samples',None)
 
+        return FilterBlanks(shared, prop_blank_feats, prop_samples)
+        

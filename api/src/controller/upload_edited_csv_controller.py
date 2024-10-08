@@ -1,9 +1,9 @@
 import os
 
+from api.src.model.FilterBlanks import FilterBlanks
 from api.src.model.DataProcessingConfig import DataProcessingConfig
 from api.src.service.create_file_service import CreateFileService
 from api.src.service.pcoa_from_file_service import PcoaFromFileService
-from api.src.utils.utils import createFile, getFile
 
 
 class UploadEditedCsvController:
@@ -17,7 +17,9 @@ class UploadEditedCsvController:
     def executeUploadEditedCsv(self):
         fullFilePath = self._createFile()
         fileId = self.session.get('fileId')
-        dataProcessingConfig = DataProcessingConfig(self.request.form['metric'], self.request.form['scaling'], self.request.form['normalization'], None)
+        filterBlanks = FilterBlanks(self.request.form['shared'],self.request.form['prop_blank_feats'],self.request.form['prop_samples'])
+
+        dataProcessingConfig = DataProcessingConfig(self.request.form['metric'], self.request.form['scaling'], self.request.form['normalization'], None,filterBlanks)
         if fullFilePath is None:
             return "FileId not found in session", 400
         file_path = os.path.join(self.app.config['UPLOADED_PATH'], fileId)
