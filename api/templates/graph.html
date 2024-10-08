@@ -79,7 +79,7 @@
                     <div class="p-2">
                         <div>
                             <label for="shared">Filter Blanks:</label>
-                            <input type="checkbox" id="shared" name="shared"  onclick="toggleInputs('shared', 'prop_samples')">
+                            <input type="checkbox" id="shared" name="shared"  onclick="toggleInputs('shared', 'prop_samples','prop_blank_feats')">
                         </div>
                         <div class="row">
                             <div class="col">
@@ -156,7 +156,7 @@
                     <div class="p-2"></div>
                         <div>
                             <label for="filter_blanks_ch_dz">Filter Blanks:</label>
-                            <input type="checkbox" id="filter_blanks_ch_dz" name="filter_blanks_ch_dz" value="filter_blanks_ch_dz" onclick="toggleInputs('filter_blanks_ch_dz', 'prop_samples_dz')">
+                            <input type="checkbox" id="filter_blanks_ch_dz" name="filter_blanks_ch_dz" value="filter_blanks_ch_dz" onclick="toggleInputs('filter_blanks_ch_dz', 'prop_samples_dz','prop_blank_feats_dz')">
                         </div>
                         <div class="row">
                             <div class="col">
@@ -244,10 +244,6 @@
 <script type="module">
 import { DropzoneListeners } from "../static/js/dropzone/DropzoneListeners.js";
 import { handlePcoaResponse } from "../static/js/Graph.js";
-// import { toggleInputs } from '../static/js/Graph.js';
-
-// document.getElementById('shared').addEventListener('click', toggleInputs.bind(null,'shared', 'prop_samples'));
-// document.getElementById('filter_blanks_ch_dz').addEventListener('click', toggleInputs.bind(null,'filter_blanks_ch_dz', 'prop_samples_dz'));
 
 Dropzone.options.dropzoneForm = {
     paramName: "file", 
