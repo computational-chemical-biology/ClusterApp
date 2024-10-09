@@ -34,7 +34,7 @@
 
     <div class="modal" id="analysis-modal" tabindex="-1" aria-labelledby="analysisModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content">
+            <div class="modal-content" style="width: 126% !important;">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="analysisModalLabel">Analyze Your Data</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -89,15 +89,15 @@
                         <div class="p-2">
                             <div>
                                 <label for="shared">Filter Blanks:</label>
-                                <input type="checkbox" id="shared" name="shared"  onclick="toggleInputs('shared', 'prop_samples','prop_blank_feats')">
+                                <input type="checkbox" id="shared" name="shared"  onclick="toggleInputs('shared', 'dt_blank_inputs')">
                             </div>
-                            <div class="row">
+                            <div class="row" id="dt_blank_inputs" style="display: none;">
                                 <div class="col">
-                                    <label for="prop_blank_feats">Blank Feats:</label>
+                                    <label for="prop_blank_feats">proportion of blank average intensity:</label>
                                     <input id="prop_blank_feats" name="prop_blank_feats" type="number" min="0" max="1" step="0.10" class="form-control">
                                 </div>
                                 <div class="col">
-                                    <label for="prop_samples">Blank Samples:</label>
+                                    <label for="prop_samples">proportion of samples:</label>
                                     <input id="prop_samples" name="prop_samples" type="number" min="0" max="1" step="0.10" class="form-control">
                                 </div>
                             </div>

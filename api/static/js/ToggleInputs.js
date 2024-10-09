@@ -1,10 +1,5 @@
-function toggleInputs(checkbox,propSample,feats) {
-    const checkboxDom = document.getElementById(checkbox);
-    const propSampleDom = document.getElementById(propSample);
-    const featsDom = document.getElementById(feats);
-    propSampleDom.value = '';
-    featsDom.value = '';
-    
-    propSampleDom.disabled = checkboxDom.checked;
-    featsDom.disabled = checkboxDom.checked;
+function toggleInputs(checkbox,blankInputs) {
+    const checkboxDom = document.getElementById(checkbox);    
+    const blankInputsDom = document.getElementById(blankInputs);
+    blankInputsDom.style.display = checkboxDom.checked == false ? 'none' : 'flex';
 }
