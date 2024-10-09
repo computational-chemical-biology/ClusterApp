@@ -3,7 +3,8 @@ function toggleInputs(checkbox,propSample,feats) {
     const propSampleDom = document.getElementById(propSample);
     const featsDom = document.getElementById(feats);
     propSampleDom.value = '';
-
+    featsDom.value = '';
+    
     propSampleDom.disabled = checkboxDom.checked;
     featsDom.disabled = checkboxDom.checked;
 }

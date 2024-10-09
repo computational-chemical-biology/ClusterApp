@@ -3,4 +3,5 @@ class FilterByBlankInFilename:
         self.df = df
 
     def execute(self):
-        return self.df[self.df['filename'].str.contains('blank') == False]
+        self.df.columns = self.df.columns.str.replace('Filename', 'filename')
+        return self.df[~self.df['filename'].str.contains('blank', case=False, na=False)]

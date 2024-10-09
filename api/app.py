@@ -38,8 +38,8 @@ def dropzoneUploadHandler():
         controller = DropzoneUploadHandler(request,session,app,PcoaFromFileService(session=session))
         return controller.executeDropzoneUpload()
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    
+        stack_trace = traceback.format_exc()
+        return jsonify({'error': 'An internal error occurred', 'details': str(e), 'trace': stack_trace}), 500
 
 @app.route('/usage',methods=['GET'])
 def usage():

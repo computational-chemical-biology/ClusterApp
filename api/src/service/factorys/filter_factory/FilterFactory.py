@@ -7,8 +7,8 @@ class FilterFactory:
         self.filter = filter
 
     def apply_filter(self, df):
-
-        if self.filter.filterByName:
+                
+        if self.filter.filterByName == "true":
             return FilterByBlankInFilename(df).execute()
-        if not self.filter.filterByName:
+        if self.filter.filterByName == "false":
             return FilterByBlanks(df,self.filter).execute()

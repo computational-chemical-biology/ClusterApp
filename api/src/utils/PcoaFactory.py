@@ -1,6 +1,8 @@
 import os
 import uuid
 from api.src.model.DataProcessingConfig import DataProcessingConfig
+from api.src.model.FilterBlanks import FilterBlanks
+from api.src.service.factorys.filter_factory.FilterFactory import FilterFactory
 from api.src.service.gnps import Proteosafe
 
 import pandas as pd
@@ -32,6 +34,7 @@ class PcoaFactory:
            os.remove(pathToRemove)
 
         self._normalizeDataFrame(dataframe)
+        dataframe = self._filterBlanks(dataframe, dataProcessingConfig.filterBlanks)
         pcoaObject = self._reformatTable(feat_table=dataframe, taskId=taskId,dataProcessingConfig=dataProcessingConfig)
         pcoa = self._saveAndCreatePcoaDirs(pcoaObject, taskId)
         return pcoa
@@ -44,6 +47,11 @@ class PcoaFactory:
         empty_cols = dataframe.columns[dataframe.isnull().all()]
         if not empty_cols.empty:
             dataframe.drop(empty_cols, axis=1, inplace=True)
+
+    def _filterBlanks(self,dataframe,filterBlanks:FilterBlanks):
+        dataframe = FilterFactory(filterBlanks).apply_filter(dataframe)   
+
+        return dataframe          
     
 
     def _saveAndCreatePcoaDirs(self,pcoa_obj,taskid):

@@ -19,7 +19,7 @@ class UploadEditedCsvController:
         fileId = self.session.get('fileId')
         filterBlanks = FilterBlanks(self.request.form['shared'],self.request.form['prop_blank_feats'],self.request.form['prop_samples'])
 
-        dataProcessingConfig = DataProcessingConfig(self.request.form['metric'], self.request.form['scaling'], self.request.form['normalization'], None,filterBlanks)
+        dataProcessingConfig = DataProcessingConfig(metric= self.request.form['metric'], scaling= self.request.form['scaling'],normalization= self.request.form['normalization'],taskId= None, workflow= None, filterBlanks= filterBlanks)
         if fullFilePath is None:
             return "FileId not found in session", 400
         file_path = os.path.join(self.app.config['UPLOADED_PATH'], fileId)
