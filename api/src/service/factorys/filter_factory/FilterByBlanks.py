@@ -28,7 +28,10 @@ class FilterByBlanks:
             Filtered pd.DataFrame.
         -------
         """
-        self.df.columns = self.df.columns.str.replace('Filename', 'filename')
+        prop_blank_feats = float(prop_blank_feats)
+        prop_samples = float(prop_samples)
+
+        feat_table.rename(columns={'Filename': 'filename'}, inplace=True)
 
         last_attr = feat_table.columns[feat_table.columns.str.contains('ATTRIBUTE')][-1]
         plast_attr = feat_table.columns.get_loc(last_attr)+1

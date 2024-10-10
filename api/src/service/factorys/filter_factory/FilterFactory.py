@@ -1,5 +1,4 @@
 from api.src.model.FilterBlanks import FilterBlanks
-from api.src.service.factorys.filter_factory.FilterByBlankInFilename import FilterByBlankInFilename
 from api.src.service.factorys.filter_factory.FilterByBlanks import FilterByBlanks
 
 class FilterFactory:
@@ -8,7 +7,5 @@ class FilterFactory:
 
     def apply_filter(self, df):
                 
-        if self.filter.filterByName == "true":
-            return FilterByBlankInFilename(df).execute()
-        if self.filter.filterByName == "false":
+        if self.filter.isToFilter == "true":
             return FilterByBlanks(df,self.filter).execute()

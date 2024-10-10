@@ -33,8 +33,8 @@ class PcoaFactory:
         if os.path.exists(pathToRemove):
            os.remove(pathToRemove)
 
-        self._normalizeDataFrame(dataframe)
         dataframe = self._filterBlanks(dataframe, dataProcessingConfig.filterBlanks)
+        self._normalizeDataFrame(dataframe)
         pcoaObject = self._reformatTable(feat_table=dataframe, taskId=taskId,dataProcessingConfig=dataProcessingConfig)
         pcoa = self._saveAndCreatePcoaDirs(pcoaObject, taskId)
         return pcoa
