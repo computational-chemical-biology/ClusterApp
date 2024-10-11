@@ -2,6 +2,7 @@ import os
 import uuid
 from api.src.model.DataProcessingConfig import DataProcessingConfig
 from api.src.model.FilterBlanks import FilterBlanks
+from api.src.model.dto.EmperorPlotDto import EmperorPlotDto
 from api.src.service.factorys.filter_factory.FilterFactory import FilterFactory
 from api.src.service.gnps import Proteosafe
 
@@ -27,17 +28,17 @@ class PcoaFactory:
         return taskid
     
 
-    def createPcoaFromFile(self, file, taskId, dataProcessingConfig:DataProcessingConfig):
+    def createPcoaFromFile(self, file, taskId, dataProcessingConfig:DataProcessingConfig) -> EmperorPlotDto:
         dataframe = pd.read_csv(file)
         pathToRemove = os.path.join(os.getcwd(), 'api/static/downloads', str(taskId))
         if os.path.exists(pathToRemove):
            os.remove(pathToRemove)
 
-        dataframe = self._filterBlanks(dataframe, dataProcessingConfig.filterBlanks)
-        self._normalizeDataFrame(dataframe)
-        pcoaObject = self._reformatTable(feat_table=dataframe, taskId=taskId,dataProcessingConfig=dataProcessingConfig)
+        filterMap = self._filterBlanks(dataframe, dataProcessingConfig.filterBlanks)
+        self._normalizeDataFrame(filterMap['dataframe'])
+        pcoaObject = self._reformatTable(feat_table=filterMap['dataframe'], taskId=taskId,dataProcessingConfig=dataProcessingConfig)
         pcoa = self._saveAndCreatePcoaDirs(pcoaObject, taskId)
-        return pcoa
+        return EmperorPlotDto(pcoa, description=filterMap['description'])
     
     def _normalizeDataFrame(self,dataframe):
         empty_rows = dataframe[dataframe.isnull().all(axis=1)].index
@@ -49,9 +50,9 @@ class PcoaFactory:
             dataframe.drop(empty_cols, axis=1, inplace=True)
 
     def _filterBlanks(self,dataframe,filterBlanks:FilterBlanks):
-        dataframe = FilterFactory(filterBlanks).apply_filter(dataframe)   
+        filterMap = FilterFactory(filterBlanks).apply_filter(dataframe)   
 
-        return dataframe          
+        return filterMap          
     
 
     def _saveAndCreatePcoaDirs(self,pcoa_obj,taskid):

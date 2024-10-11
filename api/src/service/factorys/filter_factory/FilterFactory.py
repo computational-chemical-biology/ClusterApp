@@ -9,3 +9,5 @@ class FilterFactory:
                 
         if self.filter.isToFilter == "true":
             return FilterByBlanks(df,self.filter).execute()
+        
+        return {'dataframe': df, 'description': ''}

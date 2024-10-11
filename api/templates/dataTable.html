@@ -255,7 +255,7 @@
             return response.json()
         }
         ).then(data => {
-        showPcoaModal(data.pcoa);
+        showPcoaModal(data.emperor_plot);
         hideLoading();
         hideModal('analysis-modal');
       });

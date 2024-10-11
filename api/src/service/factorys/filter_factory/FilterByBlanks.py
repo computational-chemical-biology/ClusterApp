@@ -44,5 +44,6 @@ class FilterByBlanks:
         nprop = prop_feat_less_blank.sum()
         print(f'''Found {nprop} features whose intensity was greater than {prop_blank_feats*100}% of the
             average intensity of blank samples in {prop_samples*100}% samples at least.''')
-        return pd.concat([feat_table.loc[~mask, feat_table.columns[:plast_attr]],
-                        feat_table.loc[~mask, prop_feat_less_blank[prop_feat_less_blank].index]], axis=1)
+        return {'dataframe': pd.concat([feat_table.loc[~mask, feat_table.columns[:plast_attr]],
+                        feat_table.loc[~mask, prop_feat_less_blank[prop_feat_less_blank].index]], axis=1),
+                 'description': f'Filtered out {nprop} features whose intensity was less than {prop_blank_feats*100}% of the average intensity of blank samples in {prop_samples*100}% samples at least.'}

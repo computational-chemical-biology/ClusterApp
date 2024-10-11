@@ -36,7 +36,7 @@ def downloadplot():
 def dropzoneUploadHandler():
     try:
         controller = DropzoneUploadHandler(request,session,app,PcoaFromFileService(session=session))
-        return controller.executeDropzoneUpload()
+        return jsonify({'emperor_plot':controller.executeDropzoneUpload().serialize()})
     except Exception as e:
         stack_trace = traceback.format_exc()
         return jsonify({'error': 'An internal error occurred', 'details': str(e), 'trace': stack_trace}), 500
@@ -72,7 +72,7 @@ def download_csv():
 def uploadEditedCsv():
     try:
         controller = UploadEditedCsvController(request,session,app,PcoaFromFileService(session=session))
-        return jsonify({'pcoa':controller.executeUploadEditedCsv()})
+        return jsonify({'emperor_plot':controller.executeUploadEditedCsv().serialize()})
     except Exception as e:
         return 'internal server error',500
     
