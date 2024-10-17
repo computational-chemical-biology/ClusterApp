@@ -7,7 +7,7 @@ class FilterFactory:
 
     def apply_filter(self, df):
                 
-        if self.filter.isToFilter == "true":
+        if self.filter.isToFilter == "true" or self.filter.isToFilter == True:
             return FilterByBlanks(df,self.filter).execute()
         
-        return {'dataframe': df, 'description': ''}
+        return {'dataframe': df, 'description': '','isFiltered':False}

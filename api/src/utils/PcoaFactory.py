@@ -3,29 +3,38 @@ import uuid
 from api.src.model.DataProcessingConfig import DataProcessingConfig
 from api.src.model.FilterBlanks import FilterBlanks
 from api.src.model.dto.EmperorPlotDto import EmperorPlotDto
+from api.src.service.create_file_from_gpns_service import CreateFileFromGnpsService
 from api.src.service.factorys.filter_factory.FilterFactory import FilterFactory
+from api.src.service.filter_blank_from_gpns_service import FilterBlankFromGnpsService
 from api.src.service.gnps import Proteosafe
-
 import pandas as pd
-
+from api.src.service.reformat_table_service import ReformatTableService
 from api.src.utils.utils import qiime2PCoA
 
 
 class PcoaFactory:
     def __init__(self,session):
         self.session = session
-        pass
 
-    def createPcoaFromGnps(self,dataProcessingConfig:DataProcessingConfig):
+    def createPcoaFromGnps(self,dataProcessingConfig:DataProcessingConfig,createFileFromGnpsService:CreateFileFromGnpsService):
         taskid = uuid.uuid4()
         gnps_result = Proteosafe(dataProcessingConfig.taskId, dataProcessingConfig.workflow)
         gnps_result.get_gnps()
         directory_path = os.path.join(os.getcwd(), 'api/static/downloads', str(taskid))
+        filterResult = FilterBlankFromGnpsService(dataProcessingConfig.filterBlanks,gnps_result,createFileFromGnpsService).filter()
+
         if not os.path.exists(directory_path):
             os.makedirs(directory_path, exist_ok=True)
+
+        if filterResult['isFiltered']:
+            metaFeatDto = ReformatTableService().reformatTable(filterResult['dataframe'])
+            pcoa_obj = self._createPcoa(meta=metaFeatDto.meta, feat=metaFeatDto.feat,dataProcessingConfig=dataProcessingConfig,taskId=taskid)     
+            self._saveAndCreatePcoaDirs(pcoa_obj,taskid)
+            return EmperorPlotDto(f'downloads/{taskid}/index.html', description=filterResult['description'])
+        
         pcoa_obj = self._createPcoa(meta=gnps_result.meta, feat=gnps_result.feat,dataProcessingConfig=dataProcessingConfig,taskId=taskid)     
         self._saveAndCreatePcoaDirs(pcoa_obj,taskid)
-        return taskid
+        return EmperorPlotDto(f'downloads/{taskid}/index.html', description=filterResult['description'])
     
 
     def createPcoaFromFile(self, file, taskId, dataProcessingConfig:DataProcessingConfig) -> EmperorPlotDto:
@@ -76,20 +85,6 @@ class PcoaFactory:
         """
         This Method Prepare The Meta And Feat Table To qiime2 and Return the pcoa object
         """
-        last_attr = feat_table.columns[feat_table.columns.str.contains('ATTRIBUTE')][-1]
-        plast_attr = feat_table.columns.get_loc(last_attr)+1
-        meta = feat_table[feat_table.columns[:plast_attr]]
-        meta.columns = meta.columns.str.replace('Filename', 'filename')
-        meta.filename+' Peak area'
-        meta.fillna('empty', inplace=True)
-        meta = meta.astype(str)
-        feat = feat_table[feat_table.columns[plast_attr:]].T
-        feat.columns = meta.filename+' Peak area'
-        feat_tmp = pd.DataFrame(feat.index)
-        feat_tmp.reset_index(inplace=True)
-        feat_tmp = pd.DataFrame(feat_tmp[0].apply(lambda a: a.split("_")[:2]).tolist())
-        feat_tmp.reset_index(inplace=True)
-
-        feat_tmp.columns = ['row ID', 'row m/z', 'row retention time']
-        feat = pd.concat([feat_tmp, feat.reset_index(drop=True)], axis=1)
-        return self._createPcoa(meta=meta,feat=feat,dataProcessingConfig=dataProcessingConfig,taskId=taskId)
+        metaFeatDto = ReformatTableService().reformatTable(feat_table)
+        return self._createPcoa(meta=metaFeatDto.meta,feat=metaFeatDto.feat,dataProcessingConfig=dataProcessingConfig,taskId=taskId)
+    

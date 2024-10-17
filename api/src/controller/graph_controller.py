@@ -1,14 +1,16 @@
 from flask import jsonify, render_template
 from api.src.model.FilterBlanks import FilterBlanks
 from api.src.model.DataProcessingConfig import DataProcessingConfig
+from api.src.service.create_file_from_gpns_service import CreateFileFromGnpsService
 from api.src.utils.PcoaFactory import PcoaFactory
 
 class GraphController:
 
-    def __init__(self,request,session,app):
+    def __init__(self,request,session,app,createFileFromGnpsService:CreateFileFromGnpsService):
         self.request = request
         self.session = session
         self.app = app
+        self.createFileFromGnpsService = createFileFromGnpsService
 
     def executeGraph(self):
         """
@@ -18,7 +20,7 @@ class GraphController:
             graph.html if GET request 
         """  
         if self.request.method == 'POST':
-            return jsonify(self.executePost())
+            return jsonify({'emperor_plot':self.executePost().serialize()})
         
         return render_template('graph.html')
     
@@ -28,10 +30,9 @@ class GraphController:
         normalization = self.request.form['normalization'] 
         filterBlanks = self._createFilterBlanks()
         dataProcessingConfig = DataProcessingConfig(self.request.form['metric'], scalling, normalization, self.request.form['taskid'],self.request.form['workflow'],filterBlanks)
-
         factory = PcoaFactory(session=self.session)
-        taskId =  factory.createPcoaFromGnps(dataProcessingConfig=dataProcessingConfig)
-        return f'downloads/{taskId}/index.html'
+        emperorPlot =  factory.createPcoaFromGnps(dataProcessingConfig=dataProcessingConfig,createFileFromGnpsService=self.createFileFromGnpsService)
+        return emperorPlot
 
     def _createFilterBlanks(self):
         shared = True if self.request.form.get('shared', None) == 'on' else False

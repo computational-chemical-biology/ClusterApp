@@ -35,7 +35,7 @@ export function handlePcoaResponse(response){
 }
 
 function showFilterFeedBack(description){
-    if(description !== ''){
+    if(description !== '' && description){
         showModal(description);
     }
 }

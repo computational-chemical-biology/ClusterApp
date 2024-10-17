@@ -4,6 +4,7 @@ from api.src.controller.csv_from_gnps_controller import CsvFromGnpsController
 from api.src.controller.dropzone_upload_handler import DropzoneUploadHandler
 from api.src.controller.graph_controller import GraphController
 from api.src.controller.upload_edited_csv_controller import UploadEditedCsvController
+from api.src.service.create_file_from_gpns_service import CreateFileFromGnpsService
 from api.src.service.pcoa_from_file_service import PcoaFromFileService
 from api.src.utils.GnpsRequestException import GnpsRequestException
 from api.src.utils.utils import createFile, getFile
@@ -15,7 +16,7 @@ app.config['UPLOADED_PATH'] = '/ClusterApp/api/static/downloads'
 @app.route('/graph', methods=['GET', 'POST'])
 def graph():  
     try:
-        controller = GraphController(request,session,app)
+        controller = GraphController(request,session,app,CreateFileFromGnpsService())
         return controller.executeGraph()
     except GnpsRequestException as e:
         return e, 500
@@ -87,7 +88,7 @@ def csv_from_gnps():
     create a csv file from the gnps user task
     Returns: the csv file
     """
-    controller = CsvFromGnpsController(request=request,session=session,app=app)
+    controller = CsvFromGnpsController(request=request,session=session,app=app,createFileFromGnpsService=CreateFileFromGnpsService())
     csv_path = controller.get_csv_from_gnps()
     return send_file(
         csv_path,
