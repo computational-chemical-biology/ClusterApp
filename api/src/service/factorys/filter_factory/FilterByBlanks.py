@@ -28,6 +28,7 @@ class FilterByBlanks:
             Filtered pd.DataFrame.
         -------
         """
+        
         prop_blank_feats = float(prop_blank_feats)
         prop_samples = float(prop_samples)
 
@@ -36,7 +37,6 @@ class FilterByBlanks:
         last_attr = feat_table.columns[feat_table.columns.str.contains('ATTRIBUTE')][-1]
         plast_attr = feat_table.columns.get_loc(last_attr)+1
         mask = feat_table.filename.str.lower().str.contains('blank')
-        print(self.df)
         if self.isValidToFilter(feat_table):
             return {
             'dataframe': self.df,

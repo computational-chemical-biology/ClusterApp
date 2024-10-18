@@ -223,6 +223,11 @@
             invalidInput(metricInput);
             return;
         }
+
+        if(isFilterBlankInvalid(shared, propBlankFeats, propSamples)){
+            return;
+        }
+
         removeInvalidBorder(metricInput);
         const file = prepareBlob();
 
@@ -237,6 +242,20 @@
         sendCsvToServer(formData);
     }
 
+    function isFilterBlankInvalid(shared, propBlankFeats, propSamples){
+        if(!shared){
+            return false;
+        }
+            if(propBlankFeats === "" || propSamples === ""){
+                if(propBlankFeats === ""){
+                    invalidInput(document.getElementById('prop_blank_feats'));
+                }
+                if(propSamples === ""){
+                    invalidInput(document.getElementById('prop_samples'));
+                }
+                return true;
+            }
+    }
 
     function sendCsvToServer(data) {
         showLoading();

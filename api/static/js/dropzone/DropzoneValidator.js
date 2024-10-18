@@ -5,7 +5,7 @@ export function submitDropzone(event,dropzoneInstance) {
     
     populeDragAndDropForm();
     if(verifyForm(event,inputs) == false){
-        showModal("Please ensure that Dissimilarity measure is filled and if you forget choose an normalization and scaling.");
+        showModal("Please ensure that Dissimilarity measure is filled or if Filter Blanks is checked if you filled the two percentage fields and if you forget choose an normalization and scaling.");
         return;
     }
     dropzoneInstance.processQueue();
@@ -14,7 +14,15 @@ export function submitDropzone(event,dropzoneInstance) {
 
 function populeInputs(){
     const metric = document.getElementById('metric_dz');
-    return [metric];
+    const sharedCheckBox = document.getElementById('filter_blanks_ch_dz');
+    console.log(sharedCheckBox.value);
+    if(!sharedCheckBox.value){
+        return [metric];
+    }
+    const sharedPropBlanksFeats = document.getElementById('shared-prop_blank_feats');
+    const sharedPropSamples = document.getElementById('shared-prop_samples');
+    const result = [metric, sharedPropBlanksFeats,sharedPropSamples];
+    return result;
 }
 
 function populeDragAndDropForm(){
