@@ -15,8 +15,7 @@ export function submitDropzone(event,dropzoneInstance) {
 function populeInputs(){
     const metric = document.getElementById('metric_dz');
     const sharedCheckBox = document.getElementById('filter_blanks_ch_dz');
-    console.log(sharedCheckBox.value);
-    if(!sharedCheckBox.value){
+    if(!sharedCheckBox.checked){
         return [metric];
     }
     const sharedPropBlanksFeats = document.getElementById('shared-prop_blank_feats');

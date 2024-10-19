@@ -16,6 +16,6 @@ class FilterBlankFromGnpsService:
         return self._executeFilter()
 
     def _executeFilter(self):
-        df = self.createFileFromGnpsService.createFile(self.gnpsResult.feat,self.gnpsResult.meta)
+        df = self.createFileFromGnpsService.createFile(self.gnpsResult.feat.copy(),self.gnpsResult.meta.copy())
         filterFactory = FilterFactory(self.filterBlanks)
         return filterFactory.apply_filter(df)
