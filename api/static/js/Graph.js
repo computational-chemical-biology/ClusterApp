@@ -30,5 +30,12 @@ export function handlePcoaResponse(response){
     const pcoaPlot = document.getElementById("pcoa-plot");
     divPcoa.hidden = false;
     pcoaPlot.hidden = false;
-    pcoaPlot.src = "static/"+response; 
+    pcoaPlot.src = 'static/'+response.emperor_plot.emperorDir; 
+    showFilterFeedBack(response.emperor_plot.description);
+}
+
+function showFilterFeedBack(description){
+    if(description !== '' && description){
+        showModal(description);
+    }
 }

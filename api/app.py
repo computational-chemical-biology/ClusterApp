@@ -1,8 +1,10 @@
+import traceback
 from flask import Flask, jsonify,  redirect, render_template, request, session,send_file, url_for
 from api.src.controller.csv_from_gnps_controller import CsvFromGnpsController
-from api.src.controller.dropzone_upload_handler import DropzoneUploadHanlder
+from api.src.controller.dropzone_upload_handler import DropzoneUploadHandler
 from api.src.controller.graph_controller import GraphController
 from api.src.controller.upload_edited_csv_controller import UploadEditedCsvController
+from api.src.service.create_file_from_gpns_service import CreateFileFromGnpsService
 from api.src.service.pcoa_from_file_service import PcoaFromFileService
 from api.src.utils.GnpsRequestException import GnpsRequestException
 from api.src.utils.utils import createFile, getFile
@@ -14,12 +16,13 @@ app.config['UPLOADED_PATH'] = '/ClusterApp/api/static/downloads'
 @app.route('/graph', methods=['GET', 'POST'])
 def graph():  
     try:
-        controller = GraphController(request,session,app)
+        controller = GraphController(request,session,app,CreateFileFromGnpsService())
         return controller.executeGraph()
     except GnpsRequestException as e:
-        return 'Gnps Error', 500
+        return e, 500
     except Exception as e:
-        return 'internal server error',500
+        stack_trace = traceback.format_exc()
+        return jsonify({'error': 'An internal error occurred', 'details': str(e), 'trace': stack_trace}), 500
     
 @app.route('/downloadplot')
 def downloadplot():
@@ -33,11 +36,11 @@ def downloadplot():
 @app.route('/dropzoneUploadHandler', methods=['POST'])
 def dropzoneUploadHandler():
     try:
-        controller = DropzoneUploadHanlder(request,session,app,PcoaFromFileService(session=session))
-        return controller.executeDropzoneUpload()
+        controller = DropzoneUploadHandler(request,session,app,PcoaFromFileService(session=session))
+        return jsonify({'emperor_plot':controller.executeDropzoneUpload().serialize()})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    
+        stack_trace = traceback.format_exc()
+        return jsonify({'error': 'An internal error occurred', 'details': str(e), 'trace': stack_trace}), 500
 
 @app.route('/usage',methods=['GET'])
 def usage():
@@ -70,7 +73,7 @@ def download_csv():
 def uploadEditedCsv():
     try:
         controller = UploadEditedCsvController(request,session,app,PcoaFromFileService(session=session))
-        return jsonify({'pcoa':controller.executeUploadEditedCsv()})
+        return jsonify({'emperor_plot':controller.executeUploadEditedCsv().serialize()})
     except Exception as e:
         return 'internal server error',500
     
@@ -85,7 +88,7 @@ def csv_from_gnps():
     create a csv file from the gnps user task
     Returns: the csv file
     """
-    controller = CsvFromGnpsController(request=request,session=session,app=app)
+    controller = CsvFromGnpsController(request=request,session=session,app=app,createFileFromGnpsService=CreateFileFromGnpsService())
     csv_path = controller.get_csv_from_gnps()
     return send_file(
         csv_path,

@@ -34,7 +34,7 @@
 
     <div class="modal" id="analysis-modal" tabindex="-1" aria-labelledby="analysisModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content">
+            <div class="modal-content" style="width: 126% !important;">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="analysisModalLabel">Analyze Your Data</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -85,7 +85,23 @@
                             <option value="pareto">Pareto</option>
                             <option value="autoscaling">Auto-Scaling</option>
                         </select>
-                        <br><br>
+                        
+                        <div class="p-2">
+                            <div>
+                                <label for="shared">Filter Blanks:</label>
+                                <input type="checkbox" id="shared" name="shared"  onclick="toggleInputs('shared', 'dt_blank_inputs')">
+                            </div>
+                            <div class="row" id="dt_blank_inputs" style="display: none;">
+                                <div class="col">
+                                    <label for="prop_blank_feats">proportion of blank average intensity:</label>
+                                    <input id="prop_blank_feats" name="prop_blank_feats" type="number" min="0" max="1" step="0.10" class="form-control">
+                                </div>
+                                <div class="col">
+                                    <label for="prop_samples">proportion of samples:</label>
+                                    <input id="prop_samples" name="prop_samples" type="number" min="0" max="1" step="0.10" class="form-control">
+                                </div>
+                            </div>
+                        </div>
                         
                         <div id="loading-spn" hidden="true" class="spinner-border" role="status">
                             <span class="sr-only">Loading...</span>
@@ -122,7 +138,7 @@
     
     
 
-    <div id="csv-preview" style="  padding-top: 20px; background-color: #f0f0f0;">
+    <div id="csv-preview" style="padding-top: 20px; background-color: #f0f0f0;">
       
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 
@@ -131,6 +147,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.0.0/papaparse.min.js"></script>
     <script src="../static/js/DataTable.js"></script>
+    <script src="../static/js/ToggleInputs.js"></script>
     <script>
     
     let hotInstace = undefined
@@ -198,10 +215,19 @@
         const metricValue = metricInput.value;
         const normalizationValue = document.getElementById('normalization_dz').value;
         const scalingValue = document.getElementById('scaling_dz').value;
+        const propBlankFeats = document.getElementById('prop_blank_feats').value;
+        const propSamples = document.getElementById('prop_samples').value;
+        const shared = document.getElementById('shared').checked;
+
         if(metricValue === ""){
             invalidInput(metricInput);
             return;
         }
+
+        if(isFilterBlankInvalid(shared, propBlankFeats, propSamples)){
+            return;
+        }
+
         removeInvalidBorder(metricInput);
         const file = prepareBlob();
 
@@ -210,10 +236,26 @@
         formData.append('metric', metricValue);
         formData.append('normalization', normalizationValue);
         formData.append('scaling', scalingValue);
-
+        formData.append('prop_blank_feats', propBlankFeats);
+        formData.append('prop_samples', propSamples);
+        formData.append('shared', shared);
         sendCsvToServer(formData);
     }
 
+    function isFilterBlankInvalid(shared, propBlankFeats, propSamples){
+        if(!shared){
+            return false;
+        }
+            if(propBlankFeats === "" || propSamples === ""){
+                if(propBlankFeats === ""){
+                    invalidInput(document.getElementById('prop_blank_feats'));
+                }
+                if(propSamples === ""){
+                    invalidInput(document.getElementById('prop_samples'));
+                }
+                return true;
+            }
+    }
 
     function sendCsvToServer(data) {
         showLoading();
@@ -232,7 +274,7 @@
             return response.json()
         }
         ).then(data => {
-        showPcoaModal(data.pcoa);
+        showPcoaModal(data.emperor_plot);
         hideLoading();
         hideModal('analysis-modal');
       });
