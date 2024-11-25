@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     const modalElement = document.getElementById('alert-modal');
     removeModal(modalElement);
+    startTooltip();
+    updateTooltipContent("gnps-help-icon", 'Updated dynamic title for tooltip!');
+    updateTooltipContent("dz-help-icon", 'Updated dynamic title for tooltip!');
 });
 
 function removeModal(modalElement){
@@ -38,4 +41,30 @@ function showFilterFeedBack(description){
     if(description !== '' && description){
         showModal(description);
     }
+}
+
+function startTooltip() {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+        const dynamicTitle = tooltipTriggerEl.getAttribute('data-dynamic-title');
+        if (!dynamicTitle) 
+            return;
+                
+        tooltipTriggerEl.setAttribute('title', dynamicTitle);
+            
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+}
+
+function updateTooltipContent(selector, newTitle) {
+    const element = document.querySelector(selector);
+    if (!element)
+        return; 
+    element.setAttribute('data-dynamic-title', newTitle);
+    element.setAttribute('title', newTitle);
+    const tooltipInstance = bootstrap.Tooltip.getInstance(element);
+    if (tooltipInstance) {
+        tooltipInstance.dispose();
+    }
+    new bootstrap.Tooltip(element);
 }
