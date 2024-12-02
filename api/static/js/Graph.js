@@ -44,7 +44,11 @@ function showFilterFeedBack(description){
 function startTooltip() {
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.map(function (tooltipTriggerEl) {
-        tooltipTriggerEl.setAttribute('title', 'waiting for spec.....');
+        tooltipTriggerEl.setAttribute('title', `To be removed, a feature has to be less intense than the average of
+blank samples in a portion of the non-blank samples. Be careful and
+try different thresholds, inspecting the impact on your clustering.
+You may remove true features.
+`);
 
         const existingTooltip = bootstrap.Tooltip.getInstance(tooltipTriggerEl);
         if (existingTooltip) {
