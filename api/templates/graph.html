@@ -4,7 +4,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
 
-
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css"
     integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 <style>
@@ -82,6 +82,13 @@
                             <input type="checkbox" id="shared" name="shared"  onclick="toggleInputsForm('shared', 'blank_inputs')">
                         </div>
                         <div class="row" id="blank_inputs" style="display: none !important;">
+                            <i class="material-icons text-info" 
+                                id="gnps-help-icon"
+                                data-bs-toggle="tooltip" 
+                                data-bs-placement="top" 
+                                data-dynamic-title="Check this option to filter blanks based on the provided criteria.">
+                                help_outline
+                            </i>
                             <div class="col">
                                 <label for="prop_blank_feats">proportion of blank average intensity:</label>
                                 <input id="prop_blank_feats" name="prop_blank_feats" type="number" min="0" max="1" step="0.10" class="form-control">
@@ -159,6 +166,13 @@
                             <input type="checkbox" id="filter_blanks_ch_dz" name="filter_blanks_ch_dz" onclick="toggleInputs('filter_blanks_ch_dz','blank_inputs_dz')">
                         </div>
                         <div class="row" id="blank_inputs_dz" style="display: none;">
+                            <i class="material-icons text-info" 
+                                id="dz-help-icon"
+                                data-bs-toggle="tooltip" 
+                                data-bs-placement="top" 
+                            >
+                                help_outline
+                            </i>
                             <div class="col">
                                 <label for="prop_blank_feats_dz">proportion of blank average intensity:</label>
                                 <input id="prop_blank_feats_dz" name="prop_blank_feats_dz" type="number" min="0" max="1" step="0.10" class="form-control">
@@ -234,6 +248,7 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 <script type="module" src="../static/js/Graph.js"></script>
 <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
