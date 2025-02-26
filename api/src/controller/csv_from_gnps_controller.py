@@ -29,5 +29,5 @@ class CsvFromGnpsController:
         if not os.path.exists(directoryPath):
             os.makedirs(directoryPath, exist_ok=True)
         path = directoryPath+'/'+self.request.form.get('taskId')+ '.csv'
-        df.to_csv(path)
+        df.to_csv(path,index=False)
         return path
