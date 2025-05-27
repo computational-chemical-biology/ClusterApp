@@ -18,7 +18,12 @@ export class DropzoneListeners {
         });
 
         this.dropzone.on("error", (file, errorMessage, xhr) => {
-          this._onError(file);
+          console.log(errorMessage)
+          if(errorMessage === 'You can not upload any more files.'){
+            this._onError(errorMessage)
+            return;
+          }
+          this._onErrorRemoveFile(file);
         });
 
     }
@@ -54,12 +59,16 @@ export class DropzoneListeners {
       });
     }
 
-    _onError(file){
+    _onErrorRemoveFile(file){
       this.dropzone.removeFile(file);
       document.getElementById("submit").hidden = false;
       showModal('An error occurred while processing the request. Please try again.');
     }
 
+    _onError(message){
+      document.getElementById("submit").hidden = false;
+      showModal(message);
+    }
     
 
 }

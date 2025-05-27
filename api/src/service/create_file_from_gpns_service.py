@@ -37,15 +37,14 @@ class CreateFileFromGnpsService:
         
         return df
     
-    def merge_dataframes_dynamic(self,df1, df2):
+    def merge_dataframes_dynamic(self,meta,feat):
 
-        n_rows = min(len(df1), len(df2))
+        feat.apply(lambda a: '{0}_{1}'.format(round(a['row m/z']), round(a['row retention time']*60)), axis=1)        
+        feat2 = feat[feat.columns[feat.columns.str.contains('Peak area')]].T
+        feat2.columns = feat.apply(lambda a: '{0}_{1}'.format(round(a['row m/z']), round(a['row retention time']*60)), axis=1).tolist()
+        feat2 = feat2.reset_index()
+        feat2['index'] = feat2['index'].str.replace(' Peak area', '')
         
-        df1_trimmed = df1.iloc[:n_rows].reset_index(drop=True)
-        df2_trimmed = df2.iloc[:n_rows].reset_index(drop=True)
-        
-        merged_df = pd.concat([df1_trimmed, df2_trimmed], axis=1)
-        
-        return merged_df
+        return pd.merge(meta, feat2, left_on='filename', right_on='index').drop(['index'], axis=1).to_csv('example_file_clusterapp.csv', index=None)
 
     

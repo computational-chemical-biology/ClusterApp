@@ -197,14 +197,14 @@
 
             <div class="container-fluid bg-1 text-center p-5">
                 <button type="button" class="btn btn-outline-primary mt-2" onclick="prefillForm('dropzoneForm')">
-                        Auto Fill (CSV)
-                    </button>
-                    <br>
-                    <br>
+                    Auto Fill (CSV)
+                </button>
+                <br>
+                <br>
                 <div class="pb-2">
                     <button class="btn btn-secondary" id="submit" hidden="true">Submit and Upload</button>
                     <button id="editCsvButton" type="button" hidden="true" class="btn btn-secondary">Edit CSV</button>
-                    
+
                 </div>
                 <form class="dropzone" id="dropzoneForm" action="{{ url_for('dropzoneUploadHandler') }}"
                     enctype="multipart/form-data" method="post">
@@ -273,7 +273,7 @@
     import { DropzoneListeners } from "../static/js/dropzone/DropzoneListeners.js";
     import { handlePcoaResponse } from "../static/js/Graph.js";
     import { dropzoneManager } from "../static/js/dropzone/DropzoneManager.js";
-    
+
     Dropzone.options.dropzoneForm = {
         paramName: "file",
         maxFilesize: 150,

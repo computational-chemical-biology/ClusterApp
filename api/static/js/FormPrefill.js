@@ -1,6 +1,7 @@
 import { dropzoneManager } from "./dropzone/DropzoneManager.js";
+const FILE_PATH = '/static/csv/example_file_clusterapp.csv';
 
-function prefillForm(formId) {
+async function prefillForm(formId) {
     const form = document.getElementById(formId);
     if (!form) {
         console.error(`Formulário com ID '${formId}' não encontrado.`);
@@ -9,7 +10,7 @@ function prefillForm(formId) {
 
     const values = getPrefillValues(formId);
     fillFormInputs(form, values, formId);
-    autoFillCsv(formId);
+    await autoFillCsv(formId);
 }
 
 
@@ -31,7 +32,6 @@ function getPrefillValues(formId) {
         metric_dz: "euclidean",
         normalization_dz: "TIC",
         scaling_dz: "pareto",
-        filter_blanks_ch_dz: true,
         prop_blank_feats_dz: 0.4,
         prop_samples_dz: 0.6,
 
@@ -40,7 +40,6 @@ function getPrefillValues(formId) {
         "shared-scaling": "pareto",
         "shared-prop_blank_feats": 0.4,
         "shared-prop_samples": 0.6,
-        "shared-filter_blanks_ch_dz": true
     };
 }
 
@@ -74,15 +73,26 @@ function updateElementValue(element, value) {
     }
 }
 
-function autoFillCsv(formId) {
-    if(formId !== 'dropzoneForm'){
+async function autoFillCsv(formId) {
+    if (formId !== 'dropzoneForm') {
         return;
     }
-    const blob = new Blob(['csvContent'], { type: "text/csv" });
-    const file = new File([blob], "prefilled.csv", { type: "text/csv" });
 
-    dropzoneManager.addFile(file);
+    try {
+        const response = await fetch(FILE_PATH);
+        if (!response.ok) throw new Error("Falha ao carregar o CSV");
+        if(dropzoneManager.countQueuedFiles() > 1) return;
+        const csvText = await response.text();
+
+        const blob = new Blob([csvText], { type: "text/csv" });
+        const file = new File([blob], "prefilled.csv", { type: "text/csv" });
+
+        dropzoneManager.addFile(file);
+    } catch (error) {
+        console.error("Erro ao carregar o CSV:", error);
+    }
 }
+
 
 window.prefillForm = prefillForm;
 

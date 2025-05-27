@@ -12,9 +12,14 @@ class DropzoneManager {
             console.error("Dropzone não inicializado.");
             return;
         }
-        this.dropzone.emit("addedfile", file);
-        this.dropzone.files.push(file);
+        this.dropzone.addFile(file);
     }
+
+    countQueuedFiles() {
+    return this.dropzone.files.filter(file => {
+        return file.status === Dropzone.ADDED || file.status === Dropzone.QUEUED;
+    }).length;
+}
 }
 
 export const dropzoneManager = new DropzoneManager();
