@@ -9,6 +9,7 @@ export function submitDropzone(event,dropzoneInstance) {
         return;
     }
     dropzoneInstance.processQueue();
+    console.log('processed: ',dropzoneInstance)
     document.getElementById("submit").hidden = true;
 }
 
