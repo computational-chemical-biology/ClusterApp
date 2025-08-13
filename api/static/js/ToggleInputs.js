@@ -22,3 +22,22 @@ function toggleInputsForm(checkbox, blankInputs) {
         input.removeAttribute('required');
     });
 }
+
+function toggleInputsReport(checkbox, repportInputs) {
+    const checkboxDom = document.getElementById(checkbox);    
+    const repportInputsDom = document.getElementById(repportInputs);
+    const inputs = repportInputsDom.querySelectorAll('input[type="number"]');
+
+    if (checkboxDom.checked) {
+        repportInputsDom.style.display = 'block';
+        inputs.forEach(input => {
+            input.setAttribute('required', 'required');
+        });
+        return;
+    }
+    
+    repportInputsDom.style.display = 'none';
+    inputs.forEach(input => {
+        input.removeAttribute('required');
+    });
+}

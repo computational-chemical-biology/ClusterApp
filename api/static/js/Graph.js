@@ -25,6 +25,7 @@ export function showModal(text) {
 export function handlePcoaResponse(response){
     document.getElementById("submit").hidden = false;
     document.getElementById("editCsvButton").hidden = false;
+    document.getElementById("generateCsvButton").hidden = false;
     document.getElementById("downloadPlot").hidden = false;
     
     const divPcoa = document.getElementById("pcoa-div");

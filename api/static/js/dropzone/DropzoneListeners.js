@@ -1,5 +1,5 @@
 import { handlePcoaResponse, showModal } from "../Graph.js";
-import { submitDropzone } from "./DropzoneValidator.js";
+import { submitDropzone,generateRepport } from "./DropzoneValidator.js";
 export class DropzoneListeners {
 
     constructor(dropzone,redirectUrl,event){
@@ -31,6 +31,8 @@ export class DropzoneListeners {
     _onAddedFile(file){
       const editCsvButton = document.getElementById("editCsvButton");
       const submit = document.getElementById("submit");
+      const generateCsvButton = document.getElementById("generateCsvButton");
+      generateCsvButton.hidden = false;
       editCsvButton.hidden = false;
       submit.hidden = false;
       submit.onclick = ()=> {
@@ -39,6 +41,11 @@ export class DropzoneListeners {
       editCsvButton.onclick = ()=> {
       this._redirect(file);
       }   
+      generateCsvButton.onclick = ()=> {
+        let sharedGenerateReport = document.getElementById('shared-generate_repport_ch_dz');
+        sharedGenerateReport.value = true;
+        generateRepport(this.dropzone);
+      }
     }
 
     _redirect(file) {

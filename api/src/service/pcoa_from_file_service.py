@@ -1,6 +1,8 @@
 from api.src.model.DataProcessingConfig import DataProcessingConfig
 from api.src.model.dto.EmperorPlotDto import EmperorPlotDto
+from api.src.service.reformat_table_service import ReformatTableService
 from api.src.utils.PcoaFactory import PcoaFactory
+import pandas as pd
 
 
 class PcoaFromFileService:
@@ -16,3 +18,13 @@ class PcoaFromFileService:
             return emperorPlotDto
         except Exception as e:
             raise e 
+
+    def handleGenerateReport(self,file):
+        try:
+            dataframe = pd.read_csv(file)
+            dataframe['filename'] = dataframe['filename']+'.mzML'
+            metaFeatDto = ReformatTableService().reformatTable(dataframe)
+
+            return metaFeatDto
+        except Exception as e:
+            raise e

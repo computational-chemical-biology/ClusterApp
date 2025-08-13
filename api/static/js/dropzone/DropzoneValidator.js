@@ -9,7 +9,11 @@ export function submitDropzone(event,dropzoneInstance) {
         return;
     }
     dropzoneInstance.processQueue();
-    console.log('processed: ',dropzoneInstance)
+    document.getElementById("submit").hidden = true;
+}
+
+export function generateRepport(dropzoneInstance) {
+    dropzoneInstance.processQueue();
     document.getElementById("submit").hidden = true;
 }
 

@@ -167,6 +167,7 @@
                 </select>
 
                 <div class="p-2"></div>
+                
                 <div>
                     <label for="filter_blanks_ch_dz">Filter Blanks:</label>
                     <input type="checkbox" id="filter_blanks_ch_dz" name="filter_blanks_ch_dz"
@@ -204,8 +205,9 @@
                 <div class="pb-2">
                     <button class="btn btn-secondary" id="submit" hidden="true">Submit and Upload</button>
                     <button id="editCsvButton" type="button" hidden="true" class="btn btn-secondary">Edit CSV</button>
+                    <button id="generateCsvButton" type="button" hidden="true" class="btn btn-secondary">Generate Reports</button>
 
-                </div>
+                </div>           
                 <form class="dropzone" id="dropzoneForm" action="{{ url_for('dropzoneUploadHandler') }}"
                     enctype="multipart/form-data" method="post">
 
@@ -215,6 +217,7 @@
                     <input type="hidden" id="shared-prop_blank_feats" name="prop_blank_feats" value="">
                     <input type="hidden" id="shared-prop_samples" name="prop_samples" value="">
                     <input type="hidden" id="shared-filter_blanks_ch_dz" name="filter_blanks_ch_dz" value="">
+                    <input type="hidden" id="shared-generate_repport_ch_dz" name="generate_repport_ch_dz" value="">
 
                 </form>
             </div>
