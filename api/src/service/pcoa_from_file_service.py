@@ -5,7 +5,7 @@ from api.src.service.generate_repport_service import GenerateRepportService
 from api.src.service.reformat_table_service import ReformatTableService
 from api.src.utils.PcoaFactory import PcoaFactory
 import pandas as pd
-
+import json
 
 class PcoaFromFileService:
 
@@ -27,7 +27,13 @@ class PcoaFromFileService:
             dataframe['filename'] = dataframe['filename']+'.mzML'
             metaFeatDto = ReformatTableService().reformatTable(dataframe)
             plots = CreatePlotsService(metaFeatDto=metaFeatDto,uuid=uuid).create()
-            path = GenerateRepportService(plots).generate_repport(output_path=f'{uuid}.pdf')
-            return path
+            path = GenerateRepportService(plots).generate_repport(
+                output_path=f'/ClusterApp/api/static/downloads/{uuid}.pdf',
+                cleanup_plots=True
+            )
+            return json.dumps({
+                "pdf_path": path,
+                "uuid": str(uuid)
+            })
         except Exception as e:
             raise e

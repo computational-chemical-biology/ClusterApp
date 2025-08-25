@@ -1,4 +1,4 @@
-from jinja2 import Environment, FileSystemLoader, BaseLoader
+from jinja2 import Environment, BaseLoader
 import tempfile
 import os
 from weasyprint import HTML
@@ -8,13 +8,22 @@ class GenerateRepportService:
     def __init__(self, plots):
         self.plots = plots
 
-    def generate_repport(self, output_path=None, extra_data=None):
+    def generate_repport(self, output_path=None, extra_data=None, cleanup_plots=False):
         if output_path is None:
             tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
             output_path = tmp.name
             tmp.close()
 
         saved_path = self._generate_pdf(output_path, extra_data)
+
+        if cleanup_plots:
+            for path in set(self.plots.values()):
+                try:
+                    if path and os.path.isfile(path):
+                        os.remove(path)
+                except FileNotFoundError:
+                    raise FileNotFoundError("File not found")
+
         return saved_path
 
 
@@ -49,7 +58,6 @@ class GenerateRepportService:
             template_data = {
                 "introduction_text": "PCoA color coded with first metadata column.",
                 "conclusion_text": "Example PCoA report.",
-                "debug": self.plots,
                 "plot_image_path": self.plots[plot_name]
             }
 

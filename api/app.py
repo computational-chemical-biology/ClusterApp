@@ -33,10 +33,19 @@ def downloadplot():
     pcoa_file = session.get('pcoa_file')
     return send_file(pcoa_file, as_attachment=True)
 
+@app.route('/downloadRepport/<file_id>')
+def downloadRepport(file_id):
+    return send_file(f'/ClusterApp/api/static/downloads/{file_id}.pdf', as_attachment=True)
+
 @app.route('/dropzoneUploadHandler', methods=['POST'])
 def dropzoneUploadHandler():
     try:
+        generateRepportChDz = request.form['generate_repport_ch_dz'] == 'true'
         controller = DropzoneUploadHandler(request,session,app,PcoaFromFileService(session=session))
+    
+        if generateRepportChDz:
+            return controller.executeGenerateReport()
+        
         return jsonify({'emperor_plot':controller.executeDropzoneUpload().serialize()})
     except Exception as e:
         stack_trace = traceback.format_exc()
