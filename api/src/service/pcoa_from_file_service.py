@@ -21,12 +21,12 @@ class PcoaFromFileService:
         except Exception as e:
             raise e 
 
-    def handleGenerateReport(self,file,uuid:str):
+    def handleGenerateReport(self,file,uuid:str,attribute):
         try:
             dataframe = pd.read_csv(file)
             dataframe['filename'] = dataframe['filename']+'.mzML'
             metaFeatDto = ReformatTableService().reformatTable(dataframe)
-            plots = CreatePlotsService(metaFeatDto=metaFeatDto,uuid=uuid).create()
+            plots = CreatePlotsService(metaFeatDto=metaFeatDto,uuid=uuid,attribute=attribute).create()
             path = GenerateRepportService(plots).generate_repport(
                 output_path=f'/ClusterApp/api/static/downloads/{uuid}.pdf',
                 cleanup_plots=True

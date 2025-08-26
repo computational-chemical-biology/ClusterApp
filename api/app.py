@@ -33,9 +33,6 @@ def downloadplot():
     pcoa_file = session.get('pcoa_file')
     return send_file(pcoa_file, as_attachment=True)
 
-@app.route('/downloadRepport/<file_id>')
-def downloadRepport(file_id):
-    return send_file(f'/ClusterApp/api/static/downloads/{file_id}.pdf', as_attachment=True)
 
 @app.route('/dropzoneUploadHandler', methods=['POST'])
 def dropzoneUploadHandler():

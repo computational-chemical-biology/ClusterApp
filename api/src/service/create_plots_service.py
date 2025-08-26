@@ -10,14 +10,15 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
 class CreatePlotsService:
-    def __init__(self, metaFeatDto: MetaFeatDto, uuid):
+    def __init__(self, metaFeatDto: MetaFeatDto, uuid, attribute):
         self.metaFeatDto = metaFeatDto
         self.uuid = uuid
+        self.attribute = attribute
 
     def create(self):
         distance_matrix = self._prepare_distance_matrix()
         pcoa = skbio.stats.ordination.pcoa(distance_matrix)
-        tpcoa = pd.merge(self.metaFeatDto.meta.reset_index()[['#SampleID','ATTRIBUTE_Gender']],
+        tpcoa = pd.merge(self.metaFeatDto.meta.reset_index()[['#SampleID',self.attribute]],
         pcoa.samples.reset_index(),
         left_on='#SampleID', right_on='index')
         
@@ -58,7 +59,7 @@ class CreatePlotsService:
         return dm1
 
     def _create_scatter_plot(self, tpcoa,pcoa):
-        sns.scatterplot(data=tpcoa, x="PC1", y="PC2", hue="ATTRIBUTE_Gender")
+        sns.scatterplot(data=tpcoa, x="PC1", y="PC2", hue=self.attribute)
         plt.xlabel("PCo 1 ({:.2f}%)".format(round(pcoa.proportion_explained[0], 4)*100))
         plt.ylabel("PCo 2 ({:.2f}%)".format(round(pcoa.proportion_explained[1], 4)*100))
         name = f'pcoa2d_plot_{self.uuid}.png'
@@ -79,7 +80,7 @@ class CreatePlotsService:
         
 
     def _create_pair_plot(self, tpcoa):
-        sns.pairplot(tpcoa[['ATTRIBUTE_Gender',	'PC1', 'PC2', 'PC3']], hue="ATTRIBUTE_Gender")
+        sns.pairplot(tpcoa[[self.attribute, 'PC1', 'PC2', 'PC3']], hue=self.attribute)
         name = f'pcoa_pair_plot_{self.uuid}.png'
         plt.savefig(name)
         return name

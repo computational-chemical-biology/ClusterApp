@@ -1,10 +1,10 @@
-import { showModal } from "../Graph.js";
+import { showModal, showInputModal } from "../Graph.js";
 
-export function submitDropzone(event,dropzoneInstance) {
+export function submitDropzone(event, dropzoneInstance) {
     const inputs = populeInputs();
-    
+
     populeDragAndDropForm();
-    if(verifyForm(event,inputs) == false){
+    if (verifyForm(event, inputs) == false) {
         showModal("Please ensure that Dissimilarity measure is filled or if Filter Blanks is checked if you filled the two percentage fields and if you forget choose an normalization and scaling.");
         return;
     }
@@ -13,23 +13,26 @@ export function submitDropzone(event,dropzoneInstance) {
 }
 
 export function generateRepport(dropzoneInstance) {
-    dropzoneInstance.processQueue();
-    document.getElementById("submit").hidden = true;
+    showInputModal("Please enter the attribute you want to analyze:", (inputValue) => {
+        const generateRepportAttribute = document.getElementById('shared-generate_repport_attribute');
+        generateRepportAttribute.value = inputValue;
+        dropzoneInstance.processQueue();
+    });
 }
 
-function populeInputs(){
+function populeInputs() {
     const metric = document.getElementById('metric_dz');
     const sharedCheckBox = document.getElementById('filter_blanks_ch_dz');
-    if(!sharedCheckBox.checked){
+    if (!sharedCheckBox.checked) {
         return [metric];
     }
     const sharedPropBlanksFeats = document.getElementById('shared-prop_blank_feats');
     const sharedPropSamples = document.getElementById('shared-prop_samples');
-    const result = [metric, sharedPropBlanksFeats,sharedPropSamples];
+    const result = [metric, sharedPropBlanksFeats, sharedPropSamples];
     return result;
 }
 
-function populeDragAndDropForm(){
+function populeDragAndDropForm() {
     let sharedMetric = document.getElementById('shared-metric');
     let sharedNormalization = document.getElementById('shared-normalization');
     let sharedScaling = document.getElementById('shared-scaling');
@@ -37,7 +40,7 @@ function populeDragAndDropForm(){
     let sharedPropSamples = document.getElementById('shared-prop_samples');
     let sharedCheckBox = document.getElementById('shared-filter_blanks_ch_dz');
 
-    sharedMetric.value =  document.getElementById('metric_dz').value;
+    sharedMetric.value = document.getElementById('metric_dz').value;
     sharedNormalization.value = document.getElementById('normalization_dz').value;
     sharedScaling.value = document.getElementById('scaling_dz').value;
     sharedPropBlanksFeats.value = document.getElementById('prop_blank_feats_dz').value;
@@ -50,7 +53,7 @@ function verifyForm(event, inputs) {
 
     for (let input of inputs) {
         if (input.value === "") {
-            invalidInput(event,input);
+            invalidInput(event, input);
             return false;
         }
     }
@@ -59,7 +62,7 @@ function verifyForm(event, inputs) {
 }
 
 function invalidInput(event, input) {
-    event.preventDefault(); 
+    event.preventDefault();
     input.style.border = "1px solid red";
 
     const optionElement = input.querySelector("option[value='']");

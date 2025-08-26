@@ -27,5 +27,5 @@ class DropzoneUploadHandler:
     def executeGenerateReport(self):
         file = self.request.files['file']
         fileId = uuid.uuid4()
-        
-        return self.pcoaFromFileService.handleGenerateReport(file,fileId)
+        attribute = self.request.form['generate_repport_attribute']
+        return self.pcoaFromFileService.handleGenerateReport(file,fileId,attribute)
