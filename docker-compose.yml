@@ -10,18 +10,3 @@ services:
       - .:/ClusterApp
     environment:
       - PYTHONPATH=/ClusterApp
-
-  test:
-     build:
-       context: .
-       dockerfile: Dockerfile
-     container_name: cluster_app_test
-     command: ["pytest"]
-     volumes:
-       - .:/ClusterApp
-     environment:
-       - FLASK_ENV=test
-       - PYTHONPATH=/ClusterApp
-     working_dir: /ClusterApp
-     depends_on:
-       - web

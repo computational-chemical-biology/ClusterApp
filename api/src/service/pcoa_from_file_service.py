@@ -1,7 +1,11 @@
 from api.src.model.DataProcessingConfig import DataProcessingConfig
 from api.src.model.dto.EmperorPlotDto import EmperorPlotDto
+from api.src.service.create_plots_service import CreatePlotsService
+from api.src.service.generate_repport_service import GenerateRepportService
+from api.src.service.reformat_table_service import ReformatTableService
 from api.src.utils.PcoaFactory import PcoaFactory
-
+import pandas as pd
+import json
 
 class PcoaFromFileService:
 
@@ -16,3 +20,20 @@ class PcoaFromFileService:
             return emperorPlotDto
         except Exception as e:
             raise e 
+
+    def handleGenerateReport(self,file,uuid:str,attribute):
+        try:
+            dataframe = pd.read_csv(file)
+            dataframe['filename'] = dataframe['filename']+'.mzML'
+            metaFeatDto = ReformatTableService().reformatTable(dataframe)
+            plots = CreatePlotsService(metaFeatDto=metaFeatDto,uuid=uuid,attribute=attribute).create()
+            path = GenerateRepportService(plots).generate_repport(
+                output_path=f'/ClusterApp/api/static/downloads/{uuid}.pdf',
+                cleanup_plots=True
+            )
+            return json.dumps({
+                "pdf_path": path,
+                "uuid": str(uuid)
+            })
+        except Exception as e:
+            raise e

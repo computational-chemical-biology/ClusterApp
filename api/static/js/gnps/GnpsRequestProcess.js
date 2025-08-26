@@ -1,4 +1,4 @@
-import { handlePcoaResponse } from '../Graph.js';
+import { handlePcoaResponse,handleRepportResponse } from '../Graph.js';
 import { showModal } from '../Graph.js';
 document.addEventListener('DOMContentLoaded', function() {
     requestListener();
@@ -26,6 +26,11 @@ function requestExecutor(event,form){
             return;
         }
         const data = await response.json()
+        if(data.uuid){
+            handleRepportResponse(data);
+            document.getElementById('loadin-spn').hidden = true;
+            return;
+        }
         handlePcoaResponse(data);
         document.getElementById('loadin-spn').hidden = true;
     }).catch(error => {

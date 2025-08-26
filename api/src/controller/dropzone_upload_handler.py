@@ -17,9 +17,15 @@ class DropzoneUploadHandler:
         scalling = self.request.form['scaling'] 
         normalization = self.request.form['normalization']
         filterBlanks = FilterBlanks(self.request.form['filter_blanks_ch_dz'],self.request.form['prop_blank_feats'],self.request.form['prop_samples'])
+        fileId = uuid.uuid4()
         dataProcessingConfig = DataProcessingConfig(metric=self.request.form['metric'],scaling= scalling, normalization= normalization,taskId= None,filterBlanks= filterBlanks)
 
-        fileId = uuid.uuid4()
         self.session['fileId'] = fileId
         
         return self.pcoaFromFileService.handleFile(file, fileId, dataProcessingConfig)
+
+    def executeGenerateReport(self):
+        file = self.request.files['file']
+        fileId = uuid.uuid4()
+        attribute = self.request.form['generate_repport_attribute']
+        return self.pcoaFromFileService.handleGenerateReport(file,fileId,attribute)
