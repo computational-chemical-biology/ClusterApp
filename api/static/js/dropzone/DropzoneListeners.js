@@ -60,6 +60,8 @@ export class DropzoneListeners {
         this._onErrorRemoveFile(file, "The Given Attribute Does Not exist in The Given File");
         return;
       }
+      let sharedGenerateReport = document.getElementById('shared-generate_repport_ch_dz');
+      sharedGenerateReport.value = false;
       this._onErrorRemoveFile(file);
     });
 

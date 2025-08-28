@@ -13,7 +13,9 @@ class GenerateRepportService:
             tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
             output_path = tmp.name
             tmp.close()
-
+        else:
+             if not os.path.exists('/ClusterApp/api/static/downloads'):
+                os.makedirs('/ClusterApp/api/static/downloads', exist_ok=True)
         saved_path = self._generate_pdf(output_path, extra_data)
 
         if cleanup_plots:
