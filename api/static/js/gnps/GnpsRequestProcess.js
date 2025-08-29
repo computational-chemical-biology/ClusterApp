@@ -34,6 +34,8 @@ function requestExecutor(event,form){
         handlePcoaResponse(data);
         document.getElementById('loadin-spn').hidden = true;
     }).catch(error => {
+        let sharedGenerateReport = document.getElementById('shared-generate_repport_ch_dz');
+        sharedGenerateReport.value = false;
         showError("An error occurred while processing the request. Please try again.");
     });
     
