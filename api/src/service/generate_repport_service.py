@@ -31,42 +31,15 @@ class GenerateRepportService:
 
     def _mount_html(self):
         result = []
-    
+
         for plot_name in self.plots.keys():
-            jinja_template_string = f"""
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Report with Plot</title>
-                    <style>
-                        body {{ font-family: Arial, sans-serif; margin: 20px; }}
-                        .plot {{ text-align: center; margin-bottom: 20px; }}
-                        .page-break {{ page-break-after: always; }}
-                    </style>
-                </head>
-                <body>
-                    <h1>Report with PCoA 2D</h1>
-                    <p>{{{{ introduction_text }}}}</p>
-                    <div class="plot">
-                        <img src="{{{{ plot_image_path }}}}" alt="pcoa2d" style="max-width:100%;height:auto;">
-                    </div>
-                    <p>{{{{ conclusion_text }}}}</p>
-                    <div class="page-break"></div>
-                </body>
-                </html>
+            block = f"""
+                <div class="plot">
+                    <img src="{self.plots[plot_name]}" alt="{plot_name}" style="max-width:100%;height:auto;">
+                </div>
+                <div class="page-break"></div>
             """
-            env = Environment()
-
-            template_data = {
-                "introduction_text": "PCoA color coded with first metadata column.",
-                "conclusion_text": "Example PCoA report.",
-                "plot_image_path": self.plots[plot_name]
-            }
-
-            template = env.from_string(jinja_template_string)
-
-            rendered_html = template.render(template_data)
-            result.append(rendered_html)
+            result.append(block)
         return result
 
     def _render_with_jinja(self, rendered_html, data=None):
@@ -82,14 +55,7 @@ class GenerateRepportService:
 
         body_parts = []
         for part in rendered_parts:
-            start = part.find("<body")
-            if start != -1:
-                start = part.find(">", start) + 1
-                end = part.rfind("</body>")
-                body_content = part[start:end]
-                body_parts.append(body_content)
-            else:
-                body_parts.append(part)
+            body_parts.append(part)
 
         combined = f"""<!DOCTYPE html>
             <html>
@@ -103,6 +69,7 @@ class GenerateRepportService:
             </style>
             </head>
             <body>
+            <h1>Report with PCoA 2D</h1>
             {''.join(body_parts)}
             </body>
             </html>
