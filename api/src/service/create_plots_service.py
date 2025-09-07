@@ -1,3 +1,5 @@
+from api.src.model.DataProcessingConfig import DataProcessingConfig
+from api.src.utils.utils import normalize_dataframe, scale_dataframe
 from scipy.spatial.distance import squareform, pdist
 import skbio
 import re
@@ -10,10 +12,11 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
 class CreatePlotsService:
-    def __init__(self, metaFeatDto: MetaFeatDto, uuid, attribute):
+    def __init__(self, metaFeatDto: MetaFeatDto, uuid, attribute,dataProcessingConfig:DataProcessingConfig=None):
         self.metaFeatDto = metaFeatDto
         self.uuid = uuid
         self.attribute = attribute
+        self.dataProcessingConfig = dataProcessingConfig
 
     def create(self):
         distance_matrix = self._prepare_distance_matrix()
@@ -47,6 +50,9 @@ class CreatePlotsService:
         df2.columns = [re.sub('(.+\.mzX?ML) .+', '\\1', a) for a in df2.columns]
         df2.index = df['row ID'].astype(str)
         df2 = df2.T
+        
+        df2 = normalize_dataframe(df2, self.dataProcessingConfig)
+        df2 = scale_dataframe(df2, self.dataProcessingConfig)
 
         df2.fillna(0, inplace=True)
         zero_proportion = (df2 == 0).sum().sum() / df2.size
@@ -54,7 +60,7 @@ class CreatePlotsService:
         if zero_proportion == 1.0: 
             raise ValueError(f"The DataFrame contains too many zero values ({zero_proportion:.2%}). Please check the input data table or try different scaling and normalization methods.")
 
-        dm1 = squareform(pdist(df2, metric='canberra'))
+        dm1 = squareform(pdist(df2, metric=self.dataProcessingConfig.metric))
         dm1 = skbio.DistanceMatrix(dm1, ids=df2.index.tolist())
         return dm1
 

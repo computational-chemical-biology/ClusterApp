@@ -1,6 +1,8 @@
 import os
 import re
 import pandas as pd
+from api.src.model.FilterBlanks import FilterBlanks
+from api.src.service.factorys.filter_factory.FilterFactory import FilterFactory
 import numpy as np
 from api.src.model.DataProcessingConfig import DataProcessingConfig
 from api.src.service.factorys.normalization.NormalizationFactory import NormalizationFactory
@@ -29,11 +31,8 @@ def qiime2PCoA(sample_metadata, df, out_dir,dataProcessingConfig:DataProcessingC
     df2 = df2.T
 
 
-    if dataProcessingConfig.normalization != None:
-        df2 = NormalizationFactory(dataProcessingConfig.normalization).normalize(df2)
-         
-    if dataProcessingConfig.scaling != None:
-        df2 = ScalingFactory(dataProcessingConfig.scaling).scale(df2)
+    df2 = normalize_dataframe(df2, dataProcessingConfig)
+    df2 = scale_dataframe(df2, dataProcessingConfig)
 
     df2.fillna(0, inplace=True)
     zero_proportion = (df2 == 0).sum().sum() / df2.size
@@ -53,6 +52,20 @@ def qiime2PCoA(sample_metadata, df, out_dir,dataProcessingConfig:DataProcessingC
         emperor_plot.visualization.export_data(out_dir)
     return emperor_plot
 
+def normalize_dataframe(df, dataProcessingConfig):
+    if dataProcessingConfig.normalization != None:
+        df = NormalizationFactory(dataProcessingConfig.normalization).normalize(df)
+    return df
+
+def scale_dataframe(df, dataProcessingConfig):
+    if dataProcessingConfig.scaling != None:
+        df = ScalingFactory(dataProcessingConfig.scaling).scale(df)
+    return df
+
+def filterBlanks(dataframe,filterBlanks:FilterBlanks):
+    filterMap = FilterFactory(filterBlanks).apply_filter(dataframe)   
+
+    return filterMap    
 
 def createFile(request,session,app):
     file = None

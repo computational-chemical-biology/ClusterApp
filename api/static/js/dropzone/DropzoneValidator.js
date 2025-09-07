@@ -12,10 +12,16 @@ export function submitDropzone(event, dropzoneInstance) {
     document.getElementById("submit").hidden = true;
 }
 
-export function generateRepport(dropzoneInstance) {
+export function generateRepport(dropzoneInstance,event) {
     showInputModal("Please enter the attribute you want to analyze:", (inputValue) => {
         const generateRepportAttribute = document.getElementById('shared-generate_repport_attribute');
         generateRepportAttribute.value = inputValue;
+        const inputs = populeInputs();
+        populeDragAndDropForm();
+        if (verifyForm(event, inputs) == false) {
+            showModal("Please ensure that Dissimilarity measure is filled or if Filter Blanks is checked if you filled the two percentage fields and if you forget choose an normalization and scaling.");
+            return;
+        }
         dropzoneInstance.processQueue();
     });
 }

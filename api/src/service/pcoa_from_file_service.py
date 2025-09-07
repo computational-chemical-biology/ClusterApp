@@ -7,6 +7,10 @@ from api.src.utils.PcoaFactory import PcoaFactory
 import pandas as pd
 import json
 
+from api.src.utils.utils import filterBlanks
+
+
+
 class PcoaFromFileService:
 
     def __init__(self,session):
@@ -21,12 +25,14 @@ class PcoaFromFileService:
         except Exception as e:
             raise e 
 
-    def handleGenerateReport(self,file,uuid:str,attribute):
+    def handleGenerateReport(self,file,uuid:str,attribute,dataProcessingConfig:DataProcessingConfig):
         try:
-            dataframe = pd.read_csv(file)
+            filterMap = filterBlanks(pd.read_csv(file), dataProcessingConfig.filterBlanks)
+            dataframe = filterMap['dataframe']
+            
             dataframe['filename'] = dataframe['filename']+'.mzML'
             metaFeatDto = ReformatTableService().reformatTable(dataframe)
-            plots = CreatePlotsService(metaFeatDto=metaFeatDto,uuid=uuid,attribute=attribute).create()
+            plots = CreatePlotsService(metaFeatDto=metaFeatDto,uuid=uuid,attribute=attribute,dataProcessingConfig=dataProcessingConfig).create()
             path = GenerateRepportService(plots).generate_repport(
                 output_path=f'/ClusterApp/api/static/downloads/{uuid}.pdf',
                 cleanup_plots=True
