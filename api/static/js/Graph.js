@@ -26,6 +26,7 @@ export function showInputModal(text, callback) {
     const modalElement = document.getElementById('input-modal');
     const form = modalElement.querySelector('#inputModalForm');
     const input = modalElement.querySelector('#inputModalText');
+    const cancelButton = document.getElementById('inputModalCancelButton');
 
     input.value = '';
     input.placeholder = text || '';
@@ -43,6 +44,14 @@ export function showInputModal(text, callback) {
         modal.hide();
         return false;
     };
+
+    cancelButton.onclick = function () {
+        const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+        let sharedGenerateReport = document.getElementById('shared-generate_repport_ch_dz');
+        sharedGenerateReport.value = false;
+        modal.hide();
+    }
+    
 
     const modal = new bootstrap.Modal(modalElement);
     modal.show();

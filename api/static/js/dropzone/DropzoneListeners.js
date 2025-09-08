@@ -83,7 +83,7 @@ export class DropzoneListeners {
     generateCsvButton.onclick = () => {
       let sharedGenerateReport = document.getElementById('shared-generate_repport_ch_dz');
       sharedGenerateReport.value = true;
-      generateRepport(this.dropzone);
+      generateRepport(this.dropzone,this.event);
     }
   }
 

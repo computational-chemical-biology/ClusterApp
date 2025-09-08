@@ -9,7 +9,7 @@ from api.src.service.filter_blank_from_gpns_service import FilterBlankFromGnpsSe
 from api.src.service.gnps import Proteosafe
 import pandas as pd
 from api.src.service.reformat_table_service import ReformatTableService
-from api.src.utils.utils import qiime2PCoA
+from api.src.utils.utils import filterBlanks, qiime2PCoA
 
 
 class PcoaFactory:
@@ -43,7 +43,7 @@ class PcoaFactory:
         if os.path.exists(pathToRemove):
            os.remove(pathToRemove)
 
-        filterMap = self._filterBlanks(dataframe, dataProcessingConfig.filterBlanks)
+        filterMap = filterBlanks(dataframe, dataProcessingConfig.filterBlanks)
         self._normalizeDataFrame(filterMap['dataframe'])
         pcoaObject = self._reformatTable(feat_table=filterMap['dataframe'], taskId=taskId,dataProcessingConfig=dataProcessingConfig)
         pcoa = self._saveAndCreatePcoaDirs(pcoaObject, taskId)
