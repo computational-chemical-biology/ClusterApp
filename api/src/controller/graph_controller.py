@@ -29,7 +29,7 @@ class GraphController:
         scalling = self.request.form['scaling'] 
         normalization = self.request.form['normalization'] 
         filterBlanks = self._createFilterBlanks()
-        dataProcessingConfig = DataProcessingConfig(self.request.form['metric'], scalling, normalization, self.request.form['taskid'],self.request.form['workflow'],filterBlanks)
+        dataProcessingConfig = DataProcessingConfig(self.request.form['metric'], scalling, normalization, self.request.form['taskid'],self.request.form['workflow'],filterBlanks,method=self.request.form['method'])
         factory = PcoaFactory(session=self.session)
         emperorPlot =  factory.createPcoaFromGnps(dataProcessingConfig=dataProcessingConfig,createFileFromGnpsService=self.createFileFromGnpsService)
         return emperorPlot

@@ -19,7 +19,10 @@ def graph():
         controller = GraphController(request,session,app,CreateFileFromGnpsService())
         return controller.executeGraph()
     except GnpsRequestException as e:
-        return e, 500
+        return jsonify({
+            'error': 'GNPS request failed',
+            'message': str(e)
+        }), 500
     except Exception as e:
         stack_trace = traceback.format_exc()
         return jsonify({'error': 'An internal error occurred', 'details': str(e), 'trace': stack_trace}), 500
