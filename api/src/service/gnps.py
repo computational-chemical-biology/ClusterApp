@@ -83,8 +83,8 @@ class Proteosafe:
             else:
                 self.gnps1 = None
                 self.net1 = None
-        except:
-            raise GnpsRequestException("Error in FBMN request")
+        except Exception as e:
+            raise GnpsRequestException("Error in FBMN request " +str(e))
 
 
 
@@ -109,8 +109,8 @@ class Proteosafe:
             else:
                 self.gnps1 = None
                 self.net1 = None
-        except:
-            raise GnpsRequestException("Error in V2 request")
+        except Exception as e:
+            raise GnpsRequestException("Error in V2 request " +str(e))
 
     
     def _FBMN_gnps2(self,taskid):
@@ -133,8 +133,8 @@ class Proteosafe:
             self.spectra = read_spectra(url_to_spectra)
             self.feat = pd.read_csv(io.StringIO(requests.get(url_to_features).text))
             self.meta = pd.read_csv(io.StringIO(requests.get(url_to_metadata).text), sep='\t')
-        except:
-            raise GnpsRequestException("Error in FBMN-gnps2 request")
+        except Exception as e:
+            raise GnpsRequestException("Error in FBMN-gnps2 request " +str(e))
         
 
     def get_nap(self):

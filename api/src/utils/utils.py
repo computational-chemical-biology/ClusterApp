@@ -1,10 +1,10 @@
 import os
 import re
 import pandas as pd
+from api.src.model.DataProcessingConfig import DataProcessingConfig
 from api.src.model.FilterBlanks import FilterBlanks
 from api.src.service.factorys.filter_factory.FilterFactory import FilterFactory
 import numpy as np
-from api.src.model.DataProcessingConfig import DataProcessingConfig
 from api.src.service.factorys.normalization.NormalizationFactory import NormalizationFactory
 from api.src.service.factorys.ScalingFactory import ScalingFactory
 import qiime2
@@ -29,11 +29,11 @@ def qiime2PCoA(sample_metadata, df, out_dir,dataProcessingConfig:DataProcessingC
     df2.columns = [re.sub('(.+\.mzX?ML) .+', '\\1', a) for a in df2.columns]
     df2.index = df['row ID'].astype(str)
     df2 = df2.T
-
+    
 
     df2 = normalize_dataframe(df2, dataProcessingConfig)
     df2 = scale_dataframe(df2, dataProcessingConfig)
-
+    
     df2.fillna(0, inplace=True)
     zero_proportion = (df2 == 0).sum().sum() / df2.size
 
@@ -43,8 +43,17 @@ def qiime2PCoA(sample_metadata, df, out_dir,dataProcessingConfig:DataProcessingC
     dm1 = squareform(pdist(df2, metric=dataProcessingConfig.metric))
     dm1 = skbio.DistanceMatrix(dm1, ids=df2.index.tolist())
     dm1 = Artifact.import_data("DistanceMatrix", dm1)
-    pcoa = diversity.methods.pcoa(dm1)
-    emperor_plot = emperor.visualizers.plot(pcoa.pcoa, qsample_metadata)
+    if dataProcessingConfig.method=='pcoa':
+        pcoa = diversity.methods.pcoa(dm1)
+        emperor_plot = emperor.visualizers.plot(pcoa.pcoa, qsample_metadata)
+    elif dataProcessingConfig.method=='tsne':
+        tsne = diversity.methods.tsne(dm1, number_of_dimensions=3)
+        emperor_plot = emperor.visualizers.plot(tsne.tsne, qsample_metadata)
+    elif  dataProcessingConfig.method=='umap':
+        umap = diversity.methods.umap(dm1, number_of_dimensions=3)
+        emperor_plot = emperor.visualizers.plot(umap.umap, qsample_metadata)
+    else:
+        raise ValueError("method not found.")
 
     if '.qzv' in out_dir:
         emperor_plot.visualization.save(out_dir)

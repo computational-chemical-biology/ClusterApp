@@ -58,6 +58,14 @@
                         <option value="yule">yule</option>
                     </select>
                     <br>
+
+                    <label for="method">method:</label><br>
+                    <select class="form-control-sm" id="method" name="method" value="">
+                        <option value="pcoa">PCOA</option>
+                        <option value="tsne">TSNE</option>
+                        <option value="umap">UMAP</option>
+                    </select>
+                    <br>
                     <label for="normalization">normalization:</label><br>
                     <select class="form-control-sm" id="normalization" name="normalization" value="">
                         <option value="">None</option>
@@ -90,12 +98,12 @@
                             </i>
                             <div class="col">
                                 <label for="prop_blank_feats">proportion of blank average intensity:</label>
-                                <input id="prop_blank_feats" name="prop_blank_feats" type="number"  
-                                    step="any" class="form-control">
+                                <input id="prop_blank_feats" name="prop_blank_feats" type="number" step="any"
+                                    class="form-control">
                             </div>
                             <div class="col">
                                 <label for="prop_samples">proportion of samples:</label>
-                                <input id="prop_samples" name="prop_samples" type="number"  step="any"
+                                <input id="prop_samples" name="prop_samples" type="number" step="any"
                                     class="form-control">
                             </div>
                         </div>
@@ -150,6 +158,14 @@
                     <option value="yule">yule</option>
                 </select>
                 <br>
+                <label for="method_dz">method:</label><br>
+                <select class="form-control-sm" id="method_dz" name="method" value="">
+                    <option value="pcoa">PCOA</option>
+                    <option value="tsne">TSNE</option>
+                    <option value="umap">UMAP</option>
+                </select>
+                <br>
+
                 <label for="normalization_dz">normalization:</label><br>
                 <select class="form-control-sm" id="normalization_dz" name="normalization" value="">
                     <option value="">None</option>
@@ -167,7 +183,7 @@
                 </select>
 
                 <div class="p-2"></div>
-                
+
                 <div>
                     <label for="filter_blanks_ch_dz">Filter Blanks:</label>
                     <input type="checkbox" id="filter_blanks_ch_dz" name="filter_blanks_ch_dz"
@@ -180,12 +196,12 @@
                     </i>
                     <div class="col">
                         <label for="prop_blank_feats_dz">proportion of blank average intensity:</label>
-                        <input id="prop_blank_feats_dz" name="prop_blank_feats_dz" type="number" 
-                            step="any" class="form-control">
+                        <input id="prop_blank_feats_dz" name="prop_blank_feats_dz" type="number" step="any"
+                            class="form-control">
                     </div>
                     <div class="col">
                         <label for="prop_blank_feats_dz">proportion of samples:</label>
-                        <input id="prop_samples_dz" name="prop_samples_dz" type="number"  step="any"
+                        <input id="prop_samples_dz" name="prop_samples_dz" type="number" step="any"
                             class="form-control">
                     </div>
                 </div>
@@ -205,9 +221,10 @@
                 <div class="pb-2">
                     <button class="btn btn-secondary" id="submit" hidden="true">Submit and Upload</button>
                     <button id="editCsvButton" type="button" hidden="true" class="btn btn-secondary">Edit CSV</button>
-                    <button id="generateCsvButton" type="button" hidden="true" class="btn btn-secondary">Generate Repport</button>
+                    <button id="generateCsvButton" type="button" hidden="true" class="btn btn-secondary">Generate
+                        Repport</button>
 
-                </div>           
+                </div>
                 <form class="dropzone" id="dropzoneForm" action="{{ url_for('dropzoneUploadHandler') }}"
                     enctype="multipart/form-data" method="post">
 
@@ -218,7 +235,10 @@
                     <input type="hidden" id="shared-prop_samples" name="prop_samples" value="">
                     <input type="hidden" id="shared-filter_blanks_ch_dz" name="filter_blanks_ch_dz" value="">
                     <input type="hidden" id="shared-generate_repport_ch_dz" name="generate_repport_ch_dz" value="">
-                    <input type="hidden" id="shared-generate_repport_attribute" name="generate_repport_attribute" value="">
+                    <input type="hidden" id="shared-generate_repport_attribute" name="generate_repport_attribute"
+                        value="">
+                    <input type="hidden" id="shared-method" name="method"
+                        value="">
                 </form>
             </div>
         </div>
@@ -265,24 +285,25 @@
 </div>
 
 <div class="modal" id="input-modal" tabindex="-1" aria-labelledby="inputModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <form class="modal-content" id="inputModalForm" onsubmit="return false;">
-      <div class="modal-header">
-        <h5 class="modal-title" id="inputModalLabel">Send Text</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label for="inputModalText" class="form-label">Message</label>
-          <input type="text" class="form-control" id="inputModalText" name="message" required>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" id="inputModalCancelButton" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary" id="inputModalSend">Send</button>
-      </div>
-    </form>
-  </div>
+    <div class="modal-dialog">
+        <form class="modal-content" id="inputModalForm" onsubmit="return false;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="inputModalLabel">Send Text</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="inputModalText" class="form-label">Message</label>
+                    <input type="text" class="form-control" id="inputModalText" name="message" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="inputModalCancelButton"
+                    data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="inputModalSend">Send</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 
