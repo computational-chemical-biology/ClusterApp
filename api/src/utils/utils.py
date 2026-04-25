@@ -39,6 +39,8 @@ def qiime2PCoA(sample_metadata, df, out_dir,dataProcessingConfig:DataProcessingC
 
     if zero_proportion == 1.0: 
         raise ValueError(f"The DataFrame contains too many zero values ({zero_proportion:.2%}). Please check the input data table or try different scaling and normalization methods.")
+    
+    n_samples = df2.shape[0]
 
     dm1 = squareform(pdist(df2, metric=dataProcessingConfig.metric))
     dm1 = skbio.DistanceMatrix(dm1, ids=df2.index.tolist())
@@ -47,8 +49,17 @@ def qiime2PCoA(sample_metadata, df, out_dir,dataProcessingConfig:DataProcessingC
         pcoa = diversity.methods.pcoa(dm1)
         emperor_plot = emperor.visualizers.plot(pcoa.pcoa, qsample_metadata)
     elif dataProcessingConfig.method=='tsne':
-        tsne = diversity.methods.tsne(dm1, number_of_dimensions=3)
-        emperor_plot = emperor.visualizers.plot(tsne.tsne, qsample_metadata)
+        if n_samples < 5:
+            pcoa = diversity.methods.pcoa(dm1)
+            emperor_plot = emperor.visualizers.plot(pcoa.pcoa, qsample_metadata)
+        else:
+            perplexity = min(30, n_samples - 1)
+            tsne = diversity.methods.tsne(
+                dm1,
+                number_of_dimensions=3,
+                perplexity=perplexity
+            )
+            emperor_plot = emperor.visualizers.plot(tsne.tsne, qsample_metadata)
     elif  dataProcessingConfig.method=='umap':
         umap = diversity.methods.umap(dm1, number_of_dimensions=3)
         emperor_plot = emperor.visualizers.plot(umap.umap, qsample_metadata)
