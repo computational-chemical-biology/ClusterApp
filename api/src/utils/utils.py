@@ -56,7 +56,7 @@ def qiime2PCoA(sample_metadata, df, out_dir,dataProcessingConfig:DataProcessingC
             perplexity = min(30, n_samples - 1)
             tsne = diversity.methods.tsne(
                 dm1,
-                number_of_dimensions=3,
+                number_of_dimensions=2,
                 perplexity=perplexity
             )
             emperor_plot = emperor.visualizers.plot(tsne.tsne, qsample_metadata)
