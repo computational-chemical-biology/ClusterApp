@@ -12,7 +12,7 @@ function removeInvalidBorder(input) {
 }
 
 function showPcoaModal(data) {
-    document.getElementById('pcoa-div').innerHTML = '<h3>PCoA Analysis</h3><iframe id="pcoa-plot" type="text/html" style="width:100%;height:500px;"></iframe>';
+    document.getElementById('pcoa-div').innerHTML = '<h3>Analysis Result</h3><iframe id="pcoa-plot" type="text/html" style="width:100%;height:500px;"></iframe>';
     const pcoaModalPlot = document.getElementById("pcoa-plot");
     pcoaModalPlot.src = "static/"+data.emperorDir; 
 

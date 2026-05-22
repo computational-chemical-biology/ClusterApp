@@ -18,7 +18,7 @@ class DropzoneUploadHandler:
         normalization = self.request.form['normalization']
         filterBlanks = FilterBlanks(self.request.form['filter_blanks_ch_dz'],self.request.form['prop_blank_feats'],self.request.form['prop_samples'])
         fileId = uuid.uuid4()
-        dataProcessingConfig = DataProcessingConfig(metric=self.request.form['metric'],scaling= scalling, normalization= normalization,taskId= None,filterBlanks= filterBlanks)
+        dataProcessingConfig = DataProcessingConfig(metric=self.request.form['metric'],scaling= scalling, normalization= normalization,taskId= None,filterBlanks= filterBlanks,method=self.request.form['method'])
 
         self.session['fileId'] = fileId
         
@@ -29,7 +29,7 @@ class DropzoneUploadHandler:
         scalling = self.request.form['scaling'] 
         normalization = self.request.form['normalization']
         filterBlanks = FilterBlanks(self.request.form['filter_blanks_ch_dz'],self.request.form['prop_blank_feats'],self.request.form['prop_samples'])
-        dataProcessingConfig = DataProcessingConfig(metric=self.request.form['metric'],scaling= scalling, normalization= normalization,taskId= None,filterBlanks= filterBlanks)
+        dataProcessingConfig = DataProcessingConfig(metric=self.request.form['metric'],scaling= scalling, normalization= normalization,taskId= None,filterBlanks= filterBlanks,method=self.request.form['method'])
 
         file = self.request.files['file']
         fileId = uuid.uuid4()

@@ -45,6 +45,7 @@ function populeDragAndDropForm() {
     let sharedPropBlanksFeats = document.getElementById('shared-prop_blank_feats');
     let sharedPropSamples = document.getElementById('shared-prop_samples');
     let sharedCheckBox = document.getElementById('shared-filter_blanks_ch_dz');
+    let sharedMethod = document.getElementById('shared-method');
 
     sharedMetric.value = document.getElementById('metric_dz').value;
     sharedNormalization.value = document.getElementById('normalization_dz').value;
@@ -52,6 +53,7 @@ function populeDragAndDropForm() {
     sharedPropBlanksFeats.value = document.getElementById('prop_blank_feats_dz').value;
     sharedPropSamples.value = document.getElementById('prop_samples_dz').value;
     sharedCheckBox.value = document.getElementById('filter_blanks_ch_dz').checked;
+    sharedMethod.value = document.getElementById('method_dz').value;
 }
 
 
